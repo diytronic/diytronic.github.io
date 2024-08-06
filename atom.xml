@@ -182,11 +182,11 @@
     
     <category term="zephyr" scheme="https://diytronic.ru/tags/zephyr/"/>
     
-    <category term="ble" scheme="https://diytronic.ru/tags/ble/"/>
-    
     <category term="nrf51822" scheme="https://diytronic.ru/tags/nrf51822/"/>
     
     <category term="rtos" scheme="https://diytronic.ru/tags/rtos/"/>
+    
+    <category term="ble" scheme="https://diytronic.ru/tags/ble/"/>
     
     <category term="gatt" scheme="https://diytronic.ru/tags/gatt/"/>
     
@@ -213,11 +213,11 @@
     
     <category term="nrf51822" scheme="https://diytronic.ru/tags/nrf51822/"/>
     
-    <category term="mynewt" scheme="https://diytronic.ru/tags/mynewt/"/>
-    
     <category term="rtos" scheme="https://diytronic.ru/tags/rtos/"/>
     
     <category term="nrf51" scheme="https://diytronic.ru/tags/nrf51/"/>
+    
+    <category term="mynewt" scheme="https://diytronic.ru/tags/mynewt/"/>
     
     <category term="ble-beacon" scheme="https://diytronic.ru/tags/ble-beacon/"/>
     
@@ -265,15 +265,15 @@
     
     <category term="nrf51822" scheme="https://diytronic.ru/tags/nrf51822/"/>
     
-    <category term="mynewt" scheme="https://diytronic.ru/tags/mynewt/"/>
+    <category term="ibeacon" scheme="https://diytronic.ru/tags/ibeacon/"/>
     
     <category term="nrf51" scheme="https://diytronic.ru/tags/nrf51/"/>
-    
-    <category term="ibeacon" scheme="https://diytronic.ru/tags/ibeacon/"/>
     
     <category term="nrf52" scheme="https://diytronic.ru/tags/nrf52/"/>
     
     <category term="nordic" scheme="https://diytronic.ru/tags/nordic/"/>
+    
+    <category term="mynewt" scheme="https://diytronic.ru/tags/mynewt/"/>
     
   </entry>
   
@@ -294,11 +294,11 @@
     <category term="uncategorized" scheme="https://diytronic.ru/categories/uncategorized/"/>
     
     
-    <category term="mcu" scheme="https://diytronic.ru/tags/mcu/"/>
-    
     <category term="nrf51822" scheme="https://diytronic.ru/tags/nrf51822/"/>
     
     <category term="mynewt" scheme="https://diytronic.ru/tags/mynewt/"/>
+    
+    <category term="mcu" scheme="https://diytronic.ru/tags/mcu/"/>
     
   </entry>
   
@@ -344,9 +344,9 @@
     <category term="3d-print" scheme="https://diytronic.ru/categories/3d-print/"/>
     
     
-    <category term="marlin" scheme="https://diytronic.ru/tags/marlin/"/>
-    
     <category term="sunhokey-prusa-i4" scheme="https://diytronic.ru/tags/sunhokey-prusa-i4/"/>
+    
+    <category term="marlin" scheme="https://diytronic.ru/tags/marlin/"/>
     
   </entry>
   
@@ -367,13 +367,13 @@
     <category term="3d-print" scheme="https://diytronic.ru/categories/3d-print/"/>
     
     
-    <category term="heatbed" scheme="https://diytronic.ru/tags/heatbed/"/>
+    <category term="keenovo" scheme="https://diytronic.ru/tags/keenovo/"/>
     
     <category term="sunhokey-prusa-i4" scheme="https://diytronic.ru/tags/sunhokey-prusa-i4/"/>
     
-    <category term="keenovo" scheme="https://diytronic.ru/tags/keenovo/"/>
-    
     <category term="silicone-heater" scheme="https://diytronic.ru/tags/silicone-heater/"/>
+    
+    <category term="heatbed" scheme="https://diytronic.ru/tags/heatbed/"/>
     
   </entry>
   
@@ -520,9 +520,9 @@
     
     <category term="jlink" scheme="https://diytronic.ru/tags/jlink/"/>
     
-    <category term="ble" scheme="https://diytronic.ru/tags/ble/"/>
-    
     <category term="nrf51822" scheme="https://diytronic.ru/tags/nrf51822/"/>
+    
+    <category term="ble" scheme="https://diytronic.ru/tags/ble/"/>
     
   </entry>
   
@@ -568,11 +568,11 @@
     
     <category term="G29" scheme="https://diytronic.ru/tags/G29/"/>
     
+    <category term="M420" scheme="https://diytronic.ru/tags/M420/"/>
+    
     <category term="auto-leveling" scheme="https://diytronic.ru/tags/auto-leveling/"/>
     
     <category term="bed-calibration" scheme="https://diytronic.ru/tags/bed-calibration/"/>
-    
-    <category term="M420" scheme="https://diytronic.ru/tags/M420/"/>
     
   </entry>
   
