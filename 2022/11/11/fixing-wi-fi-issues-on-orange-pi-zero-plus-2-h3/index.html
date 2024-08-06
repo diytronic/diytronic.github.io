@@ -41,19 +41,21 @@
 
   <div class="post__entry" itemprop="articleBody">
     
-    <p>В ходе настройки Orange Pi&nbsp;Zero Plus 2 H3&nbsp;обнаружил, что есть конкретные проблемы с&nbsp;Wi-Fi. В&nbsp;зависимости от&nbsp;используемого дистрибутива Linux имеем либо негрузящайся драйвер, либо работают только первые 11&nbsp;каналов Wi-Fi, а&nbsp;учитывая, что моих сетей там&nbsp;нет, это проблема, которую пришлось решать. Решение я&nbsp;нашёл и&nbsp;ниже я&nbsp;его вам покажу и&nbsp;расскажу как с&nbsp;этой проблемой бороться. </p>
+    <p>В ходе настройки Orange Pi&nbsp;Zero Plus 2 H3&nbsp;обнаружил, что есть конкретные проблемы с&nbsp;Wi-Fi. В&nbsp;зависимости от&nbsp;используемого дистрибутива Linux имеем либо негрузящайся драйвер, либо работают только первые 11&nbsp;каналов Wi-Fi, а&nbsp;учитывая, что моих сетей там&nbsp;нет, это проблема, которую пришлось решать. Решение я&nbsp;нашёл и&nbsp;ниже я&nbsp;его вам покажу и&nbsp;расскажу как с&nbsp;этой проблемой бороться.</p>
 <span id="more"></span>
-
 <p>Итак, хотелось мне запустить эту плату именно в&nbsp;Armbin, но&nbsp;именно этот дистрибутив славился&nbsp;тем, что данная плата в&nbsp;нём Wi-Fi не&nbsp;поддерживала. Но&nbsp;мы&nbsp;не&nbsp;ищем лёгких путей и&nbsp;из-за какого-то там чортова драйвера менять дистрибутив для меня просто унижение. Если драйвер есть и&nbsp;он&nbsp;в&nbsp;принципе работает, то&nbsp;и&nbsp;в&nbsp;Armbian он&nbsp;у&nbsp;меня заработает. Вызов принят!</p>
-<h2 id="Получаем-проблему"><a href="#Получаем-проблему" class="headerlink" title="Получаем проблему"></a>Получаем проблему</h2><p>Итак, первым делом накатываем Armbian. На&nbsp;официальной стрaнице образа для данной платы я&nbsp;не&nbsp;нашёл, но&nbsp;зато нашёл где эти сборки выкладываются. В&nbsp;общем качаем отсюда <a target="_blank" rel="noopener" href="https://fi.mirror.armbian.de/archive/orangepizeroplus2-h3/archive/">https://fi.mirror.armbian.de/archive/orangepizeroplus2-h3/archive/</a>. Я&nbsp;использовал версию bullseye. Пробовал jammy, но&nbsp;там ровно тоже самое.</p>
-<h2 id="Альтернативные-драйвера"><a href="#Альтернативные-драйвера" class="headerlink" title="Альтернативные драйвера"></a>Альтернативные драйвера</h2><p>Они существуют и&nbsp;возможно работают. </p>
+<h2 id="получаем-проблему">Получаем проблему</h2>
+<p>Итак, первым делом накатываем Armbian. На&nbsp;официальной стрaнице образа для данной платы я&nbsp;не&nbsp;нашёл, но&nbsp;зато нашёл где эти сборки выкладываются. В&nbsp;общем качаем отсюда <a target="_blank" rel="noopener" href="https://fi.mirror.armbian.de/archive/orangepizeroplus2-h3/archive/">https://fi.mirror.armbian.de/archive/orangepizeroplus2-h3/archive/</a>. Я&nbsp;использовал версию bullseye. Пробовал jammy, но&nbsp;там ровно тоже самое.</p>
+<h2 id="альтернативные-драйвера">Альтернативные драйвера</h2>
+<p>Они существуют и&nbsp;возможно работают.</p>
 <ul>
 <li><a target="_blank" rel="noopener" href="https://github.com/antoineco/broadcom-wl">https://github.com/antoineco/broadcom-wl</a></li>
 <li><a target="_blank" rel="noopener" href="http://linuxwireless.sipsolutions.net/en/users/Drivers/b43/">http://linuxwireless.sipsolutions.net/en/users/Drivers/b43/</a></li>
 </ul>
 <p>Проблема одна&nbsp;&mdash; их&nbsp;надо качать, а&nbsp;сети&nbsp;нет. Можно конечно скачать код на&nbsp;другом компьютере, залить на&nbsp;карточку и&nbsp;попытаться собрать на&nbsp;плате, но&nbsp;слишком много возни и&nbsp;вероятно потребуется докачивать зависимости.</p>
-<h2 id="Анализируем-ошибки"><a href="#Анализируем-ошибки" class="headerlink" title="Анализируем ошибки"></a>Анализируем ошибки</h2><p>В итоге имеем условно работающий Wi-Fi из&nbsp;каробки с&nbsp;куцым списком доступных сетей и&nbsp;ошибки в&nbsp;логах при загрузке фирмвари данного драйвера.</p>
-<p>Ошибки выглядят так </p>
+<h2 id="анализируем-ошибки">Анализируем ошибки</h2>
+<p>В итоге имеем условно работающий Wi-Fi из&nbsp;каробки с&nbsp;куцым списком доступных сетей и&nbsp;ошибки в&nbsp;логах при загрузке фирмвари данного драйвера.</p>
+<p>Ошибки выглядят так</p>
 <pre class="code language language-bash"><code class="language language-bash">% <span class="token function">dmesg</span> <span class="token operator">|</span> <span class="token function">grep</span> brcm
 brcmfmac: brcmf_fw_alloc_request: using brcm/brcmfmac43430-sdio <span class="token keyword">for</span> chip BCM43430/1
 brcmfmac mmc1:0001:1: Direct firmware load <span class="token keyword">for</span> brcm/brcmfmac43430-sdio.xunlong,orangepi-zero-plus2-h3.bin failed with error -2
@@ -63,16 +65,16 @@ brcmfmac mmc1:0001:1: Falling back to sysfs fallback for: brcm/brcmfmac43430-sdi
 brcmfmac: brcmf_fw_alloc_request: using brcm/brcmfmac43430-sdio <span class="token keyword">for</span> chip BCM43430/1
 brcmfmac: brcmf_c_process_clm_blob: no clm_blob available <span class="token punctuation">(</span>err<span class="token operator">=</span>-2<span class="token punctuation">)</span>, device may have limited channels available
 brcmfmac: brcmf_c_preinit_dcmds: Firmware: BCM43430/1 wl0: Mar <span class="token number">30</span> <span class="token number">2016</span> <span class="token number">11</span>:30:56 version <span class="token number">7.45</span>.77.h8.4 FWID 01-ee8a6268</code></pre>
-
 <p>Как видно оно пытается загрузить какую-то фирмварь и&nbsp;не&nbsp;может найти нужных файлов. Придётся таки разбираться, что такое firmware и&nbsp;как оно грузится</p>
-<h2 id="Linux-и-firmware"><a href="#Linux-и-firmware" class="headerlink" title="Linux и firmware"></a>Linux и&nbsp;firmware</h2><p>В общем, как выяснилось, для всяких проприетарных драйверов типа Broadcom-а у&nbsp;нас есть бинарные файлы (та самая firmware), которые и&nbsp;подгружаются родным линуксовым драйвером, чтобы всё работало как надо. Но&nbsp;кроме бинарника у&nbsp;нас есть некий конфиг, который есть ни&nbsp;что иное как набор переменных, которые заливаются в&nbsp;NVRAM драйвера. </p>
-<h2 id="Что-не-так-в-нашем-случае"><a href="#Что-не-так-в-нашем-случае" class="headerlink" title="Что не так в нашем случае"></a>Что не&nbsp;так в&nbsp;нашем случае</h2><p>Для нашего случая всё выглядит вот&nbsp;так.</p>
+<h2 id="linux-и-firmware">Linux и&nbsp;firmware</h2>
+<p>В общем, как выяснилось, для всяких проприетарных драйверов типа Broadcom-а у&nbsp;нас есть бинарные файлы (та самая firmware), которые и&nbsp;подгружаются родным линуксовым драйвером, чтобы всё работало как надо. Но&nbsp;кроме бинарника у&nbsp;нас есть некий конфиг, который есть ни&nbsp;что иное как набор переменных, которые заливаются в&nbsp;NVRAM драйвера.</p>
+<h2 id="что-не-так-в-нашем-случае">Что не&nbsp;так в&nbsp;нашем случае</h2>
+<p>Для нашего случая всё выглядит вот&nbsp;так.</p>
 <pre class="code language language-bash"><code class="language language-bash">% <span class="token function">ls</span> -la /lib/firmware/brcm/*43430*
 <span class="token punctuation">..</span>.
 /lib/firmware/brcm/brcmfmac43430-sdio.bin   <span class="token comment"># &lt;=== бинарник фирмвари</span>
 /lib/firmware/brcm/brcmfmac43430-sdio.txt   <span class="token comment"># &lt;=== конфиг</span></code></pre>
-
-<p>Но как видно из&nbsp;ошибки, драйвер пытается загрузить firmware из&nbsp;файла с&nbsp;суффиксом вендора устройства, то&nbsp;есть <code>/lib/firmware/brcm/brcmfmac43430-sdio.xunlong,orangepi-zero-plus2-h3.bin</code> вместо <code>/lib/firmware/brcm/brcmfmac43430-sdio.bin</code>. Поэтому я&nbsp;решил просто создать нужные симлинки. </p>
+<p>Но как видно из&nbsp;ошибки, драйвер пытается загрузить firmware из&nbsp;файла с&nbsp;суффиксом вендора устройства, то&nbsp;есть <code>/lib/firmware/brcm/brcmfmac43430-sdio.xunlong,orangepi-zero-plus2-h3.bin</code> вместо <code>/lib/firmware/brcm/brcmfmac43430-sdio.bin</code>. Поэтому я&nbsp;решил просто создать нужные симлинки.</p>
 <p>Забегая вперёд должен отметить, что это оказалось необязательно, а&nbsp;эта ошибка это скорее предупреждение. Походу драйвер таки находит фирмварь и&nbsp;по&nbsp;существующим именам. Но&nbsp;что сделано, то&nbsp;сделано и&nbsp;как минимум убираются сообщения об&nbsp;ошибках при загрузке.</p>
 <p>После исправления имеем такую картину.</p>
 <pre class="code language language-bash"><code class="language language-bash">% <span class="token function">ls</span> -la /lib/firmware/brcm/*43430*
@@ -81,21 +83,23 @@ brcmfmac: brcmf_c_preinit_dcmds: Firmware: BCM43430/1 wl0: Mar <span class="toke
 /lib/firmware/brcm/brcmfmac43430-sdio.txt   <span class="token comment"># &lt;=== конфиг</span>
 /lib/firmware/brcm/brcmfmac43430-sdio.xunlong,orangepi-zero-plus2-h3.bin -<span class="token operator">></span> /lib/firmware/brcm/brcmfmac43430-sdio.bin
 /lib/firmware/brcm/brcmfmac43430-sdio.xunlong,orangepi-zero-plus2-h3.txt -<span class="token operator">></span> /lib/firmware/brcm/brcmfmac43430-sdio.txt</code></pre>
-
 <p>Теперь при загрузке видим следующее</p>
 <pre class="code language language-bash"><code class="language language-bash">% <span class="token function">dmesg</span> <span class="token operator">|</span> <span class="token function">grep</span> brcm
 brcmfmac: brcmf_fw_alloc_request: using brcm/brcmfmac43430-sdio <span class="token keyword">for</span> chip BCM43430/1 <span class="token comment"># &lt;== стало норм</span>
 brcmfmac: brcmf_fw_alloc_request: using brcm/brcmfmac43430-sdio <span class="token keyword">for</span> chip BCM43430/1 <span class="token comment"># &lt;== стало норм</span>
 brcmfmac: brcmf_c_process_clm_blob: no clm_blob available <span class="token punctuation">(</span>err<span class="token operator">=</span>-2<span class="token punctuation">)</span>, device may have limited channels available
 brcmfmac: brcmf_c_preinit_dcmds: Firmware: BCM43430/1 wl0: Mar <span class="token number">30</span> <span class="token number">2016</span> <span class="token number">11</span>:30:56 version <span class="token number">7.45</span>.77.h8.4 FWID 01-ee8a6268</code></pre>
-
-<h2 id="Задаём-код-региона"><a href="#Задаём-код-региона" class="headerlink" title="Задаём код региона"></a>Задаём код региона</h2><p>Несмотря на&nbsp;успешную загрузку фирмвари, нас осталась ошибка как раз насчёт ограничения каналов и&nbsp;фирмварь ругается на&nbsp;какой-то <code>clm_blob</code>. Это как оказалось ещё один бинарник с&nbsp;региональными настройками для данного драйвера. И&nbsp;с&nbsp;этими самыми настройками полная чехарда. В&nbsp;разное время за&nbsp;это дело отвечали следующие подсистемы.</p>
-<h3 id="CRDA-central-regulatory-domain-agent"><a href="#CRDA-central-regulatory-domain-agent" class="headerlink" title="CRDA (central regulatory domain agent)"></a>CRDA (central regulatory domain agent) </h3><p>С этим связаны рекоммендации поправить регион в&nbsp;<code>/etc/default/crda</code>, но&nbsp;нифига не&nbsp;работает, так как эта тема устарела с&nbsp;версии ядра 4.15</p>
-<h3 id="cfg80211"><a href="#cfg80211" class="headerlink" title="cfg80211"></a>cfg80211</h3><p>Есть так&nbsp;же&nbsp;рекоммендации передать регион драйверу Linux cfg80211, но&nbsp;это тоже устарело и&nbsp;сегодня каждый драйвер должен сам уметь разбираться с&nbsp;такими делами. </p>
+<h2 id="задаём-код-региона">Задаём код региона</h2>
+<p>Несмотря на&nbsp;успешную загрузку фирмвари, нас осталась ошибка как раз насчёт ограничения каналов и&nbsp;фирмварь ругается на&nbsp;какой-то <code>clm_blob</code>. Это как оказалось ещё один бинарник с&nbsp;региональными настройками для данного драйвера. И&nbsp;с&nbsp;этими самыми настройками полная чехарда. В&nbsp;разное время за&nbsp;это дело отвечали следующие подсистемы.</p>
+<h3 id="crda-central-regulatory-domain-agent">CRDA (central regulatory domain agent) </h3>
+<p>С этим связаны рекоммендации поправить регион в&nbsp;<code>/etc/default/crda</code>, но&nbsp;нифига не&nbsp;работает, так как эта тема устарела с&nbsp;версии ядра 4.15</p>
+<h3 id="cfg80211">cfg80211</h3>
+<p>Есть так&nbsp;же&nbsp;рекоммендации передать регион драйверу Linux cfg80211, но&nbsp;это тоже устарело и&nbsp;сегодня каждый драйвер должен сам уметь разбираться с&nbsp;такими делами.</p>
 <pre class="code language language-bash"><code class="language language-bash"><span class="token builtin class-name">echo</span> <span class="token string">"options cfg80211 ieee80211_regdom=US"</span> <span class="token operator">></span> /etc/modprobe.d/cfg80211.conf</code></pre>
-
-<h3 id="clm-blob"><a href="#clm-blob" class="headerlink" title="clm_blob"></a>clm_blob</h3><p>Это по&nbsp;факту кусок базы данных, типа&nbsp;той, что использовалась в&nbsp;CRDA, но&nbsp;специфичный для данного драйвера. Как оказалось и&nbsp;этот метод устарел и&nbsp;вся информация уже должна содержаться в&nbsp;недрах драйвера. К&nbsp;слову я&nbsp;таки нашёл этот бинарь от&nbsp;Raspberry PI&nbsp;и&nbsp;подсунул для загрузки, но&nbsp;работать лучше не&nbsp;стало.</p>
-<h3 id="И-что-таки-делать"><a href="#И-что-таки-делать" class="headerlink" title="И что таки делать?"></a>И что таки делать?</h3><p>В итоге пришлось лезть в&nbsp;конфиг фирмвари и&nbsp;уже там я&nbsp;обнаружил подозрительную переменную <code>ccode=ALL</code>, поменяв значение которой, после перезагрузки я&nbsp;получил полный список Wi-Fi сетей.</p>
+<h3 id="clm-blob">clm_blob</h3>
+<p>Это по&nbsp;факту кусок базы данных, типа&nbsp;той, что использовалась в&nbsp;CRDA, но&nbsp;специфичный для данного драйвера. Как оказалось и&nbsp;этот метод устарел и&nbsp;вся информация уже должна содержаться в&nbsp;недрах драйвера. К&nbsp;слову я&nbsp;таки нашёл этот бинарь от&nbsp;Raspberry PI&nbsp;и&nbsp;подсунул для загрузки, но&nbsp;работать лучше не&nbsp;стало.</p>
+<h3 id="и-что-таки-делать">И что таки делать?</h3>
+<p>В итоге пришлось лезть в&nbsp;конфиг фирмвари и&nbsp;уже там я&nbsp;обнаружил подозрительную переменную <code>ccode=ALL</code>, поменяв значение которой, после перезагрузки я&nbsp;получил полный список Wi-Fi сетей.</p>
 <pre class="code language language-ini"><code class="language language-ini"><span class="token comment">#AP6212_NVRAM_V1.0_20140603</span>
 <span class="token comment"># 2.4 GHz, 20 MHz BW mode</span>
 
@@ -108,21 +112,24 @@ brcmfmac: brcmf_c_preinit_dcmds: Firmware: BCM43430/1 wl0: Mar <span class="toke
 <span class="token constant">ccode</span><span class="token attr-value"><span class="token punctuation">=</span>ALL # &lt;===== вот тут меняем ALL на RU </span>
 <span class="token constant">extpagain2g</span><span class="token attr-value"><span class="token punctuation">=</span>0</span>
 ........</code></pre>
-
-<p>Но тут есть проблема&nbsp;&mdash; при обновлении пакета с&nbsp;фирмварями этот файл будет перезаписываться. </p>
-<h1 id="Всё-чудесатее-и-чудесатее"><a href="#Всё-чудесатее-и-чудесатее" class="headerlink" title="Всё чудесатее и чудесатее"></a>Всё чудесатее и&nbsp;чудесатее</h1><p>Гугля по&nbsp;теме обнаружил ссылки на&nbsp;исходники с&nbsp;такими комментариями</p>
+<p>Но тут есть проблема&nbsp;&mdash; при обновлении пакета с&nbsp;фирмварями этот файл будет перезаписываться.</p>
+<h1 id="всё-чудесатее-и-чудесатее">Всё чудесатее и&nbsp;чудесатее</h1>
+<p>Гугля по&nbsp;теме обнаружил ссылки на&nbsp;исходники с&nbsp;такими комментариями</p>
 <pre class="code"><code>/* In some cases the EFI-var stored nvram contains "ccode=ALL" or
  * "ccode=XV" to specify "worldwide" compatible settings. ccode=ALL is
  * not understood by the firmware and some of the firmware files in
  * linux-firmware support only 2.4 GHz and not 5 GHz when ccode=XV.
  */</code></pre>
-
 <p>Так, что видимо стоит попробовать вместо <strong>RU</strong> использовать <strong>XV</strong>. Возможно даже появится диапазон 5ГГц.</p>
-<h1 id="Я-сдаюсь"><a href="#Я-сдаюсь" class="headerlink" title="Я сдаюсь"></a>Я сдаюсь</h1><p>Кроме всего прочего искал способ прописать ccode в&nbsp;драйвер через /proc или /sys.<br>Декомпилировал devicetree в&nbsp;надежде найти там способ перезаписать значения NVRAM.</p>
+<h1 id="я-сдаюсь">Я сдаюсь</h1>
+<p>Кроме всего прочего искал способ прописать ccode в&nbsp;драйвер через /proc или /sys.<br>
+Декомпилировал devicetree в&nbsp;надежде найти там способ перезаписать значения NVRAM.</p>
 <p>Все тщетно. Походу эти фирмвари и&nbsp;драйвера для Broadcom писались через жопу, на&nbsp;скорую руку и&nbsp;всё, что нам остаётся это грязно патчить через подмену значения в&nbsp;этом текстовом конфиге.</p>
-<h1 id="Итого"><a href="#Итого" class="headerlink" title="Итого"></a>Итого</h1><p>Как оказалось в&nbsp;принципе по&nbsp;минимуму достаточно поменять <code>ccode=ALL</code> на&nbsp;<code>ccode=RU</code> в&nbsp;конфиге фирмвари драйвера. </p>
+<h1 id="итого">Итого</h1>
+<p>Как оказалось в&nbsp;принципе по&nbsp;минимуму достаточно поменять <code>ccode=ALL</code> на&nbsp;<code>ccode=RU</code> в&nbsp;конфиге фирмвари драйвера.</p>
 <p>И видимо в&nbsp;автозагрузку придётся добавить скрипт для замены ccode в&nbsp;нужном файле.</p>
-<h1 id="Ссылки"><a href="#Ссылки" class="headerlink" title="Ссылки"></a>Ссылки</h1><ul>
+<h1 id="ссылки">Ссылки</h1>
+<ul>
 <li><a target="_blank" rel="noopener" href="https://help.ubuntu.com/community/WifiDocs/Driver/bcm43xx">https://help.ubuntu.com/community/WifiDocs/Driver/bcm43xx</a></li>
 <li><a target="_blank" rel="noopener" href="https://wireless.wiki.kernel.org/en/users/Drivers/brcm80211">https://wireless.wiki.kernel.org/en/users/Drivers/brcm80211</a></li>
 </ul>

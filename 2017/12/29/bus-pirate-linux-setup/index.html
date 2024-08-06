@@ -43,107 +43,102 @@
     
     <p>Не так давно узнал про <a target="_blank" rel="noopener" href="http://dangerousprototypes.com/docs/Bus_Pirate">Bus Pirate</a>&nbsp;&mdash; устройство для эмуляции и&nbsp;анализа различных протоколов управления электронными устройствами. Ну&nbsp;типа там&nbsp;SPI, I2&thinsp;&deg;C и&nbsp;прочих. Решил пощупать, что за&nbsp;зверь такой и&nbsp;купил у&nbsp;братьев-китайцев это устройство. Сегодня получил на&nbsp;почте заветную посылку и&nbsp;решил проверить как оно работает.</p>
 <span id="more"></span>
-
 <p>Для начала должен отметить, что в&nbsp;данный момент есть 2&nbsp;версии этого устройства 3-я и&nbsp;4-я. Третья версия является стабильной и&nbsp;наиболее отлаженной, но&nbsp;я&nbsp;купился на&nbsp;магию циферок и&nbsp;купил 4-ю, которая обладает более продвинутым железом и&nbsp;потенциально имеет больше возможностей.</p>
-<p>Изначально хотел купить на&nbsp;старом добром AliExpress-е. Там есть как <a target="_blank" rel="noopener" href="http://ali.pub/25fmwu">Bus Pirate v3.6</a> так и&nbsp;<a target="_blank" rel="noopener" href="http://ali.pub/25fmub">4-й bus pirate</a>, но&nbsp;что-то не&nbsp;захотелось покупать голую плату и&nbsp;в&nbsp;итоге приобрёл на&nbsp;ebay.com <a target="_blank" rel="noopener" href="https://www.ebay.com/itm/Bus-Pirate-v4-Universal-Interface-1-Wire-I2C-SPI-UART-etc-BPv4-Gadget/121432974048?ssPageName=STRK:MEBIDX:IT&_trksid=p2060353.m2749.l2649">Bus Pirate v4</a></p>
+<p>Изначально хотел купить на&nbsp;старом добром AliExpress-е. Там есть как <a target="_blank" rel="noopener" href="http://ali.pub/25fmwu">Bus Pirate v3.6</a> так и&nbsp;<a target="_blank" rel="noopener" href="http://ali.pub/25fmub">4-й bus pirate</a>, но&nbsp;что-то не&nbsp;захотелось покупать голую плату и&nbsp;в&nbsp;итоге приобрёл на&nbsp;<a target="_blank" rel="noopener" href="http://ebay.com">ebay.com</a> <a target="_blank" rel="noopener" href="https://www.ebay.com/itm/Bus-Pirate-v4-Universal-Interface-1-Wire-I2C-SPI-UART-etc-BPv4-Gadget/121432974048?ssPageName=STRK%3AMEBIDX%3AIT&amp;_trksid=p2060353.m2749.l2649">Bus Pirate v4</a></p>
 <p>Вот такую штуку я&nbsp;в&nbsp;итоге получил:</p>
 <img src="/2017/12/29/bus-pirate-linux-setup/bus-pirate-unpack.jpg" class="" title="Bus Pirate распаковка">
-
-<h1 id="Подключение"><a href="#Подключение" class="headerlink" title="Подключение"></a>Подключение</h1><p>Эта штука работает через USB-&gt; COM порт, поэтому, чтобы не&nbsp;разбираться с&nbsp;номером порта, который ему присвоит система я&nbsp;традиционно задействую классическую линуксовую методику по&nbsp;созданию именованной ссылки на&nbsp;нужное мне устройство. Для этого нужно прописать определённые правила в&nbsp;udev.</p>
+<h1 id="подключение">Подключение</h1>
+<p>Эта штука работает через USB-&gt; COM порт, поэтому, чтобы не&nbsp;разбираться с&nbsp;номером порта, который ему присвоит система я&nbsp;традиционно задействую классическую линуксовую методику по&nbsp;созданию именованной ссылки на&nbsp;нужное мне устройство. Для этого нужно прописать определённые правила в&nbsp;udev.</p>
 <p>Итак для начала посмотрим как&nbsp;же&nbsp;у&nbsp;нас подключилась эта штуковина. Для этого подключим её&nbsp;по&nbsp;USB и&nbsp;выполнима команду:</p>
 <figure class="highlight sh"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">$ lsusb</span><br><span class="line">...</span><br><span class="line">Bus 003 Device 029: ID 04d8:f7ea Microchip Technology, Inc.</span><br><span class="line">...</span><br></pre></td></tr></table></figure>
-
 <p>Как мы&nbsp;видим устройство в&nbsp;списке появилось под именем Microchip Technology, Inc. С&nbsp;помощью команды <code>dmesg</code> посмотрим какое имя присвоилось устройству:</p>
 <figure class="highlight sh"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">$ dmesg</span><br><span class="line">...</span><br><span class="line">[139614.971483] usb 3-1: new full-speed USB device number 29 using xhci_hcd</span><br><span class="line">[139615.686208] cdc_acm 3-1:1.0: ttyACM0: USB ACM device</span><br><span class="line">[139615.686526] usbcore: registered new interface driver cdc_acm</span><br><span class="line">[139615.686527] cdc_acm: USB Abstract Control Model driver <span class="keyword">for</span> USB modems</span><br></pre></td></tr></table></figure>
-
 <p>И запросим у&nbsp;<code>udev</code> для этого устройства подробную информацию:</p>
 <figure class="highlight sh"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br></pre></td><td class="code"><pre><span class="line">$ udevadm info --attribute-walk -n /dev/ttyACM0</span><br><span class="line">    looking at parent device <span class="string">&#x27;/devices/pci0000:00/0000:00:14.0/usb3/3-1&#x27;</span>:</span><br><span class="line">    KERNELS==<span class="string">&quot;3-1&quot;</span></span><br><span class="line">    SUBSYSTEMS==<span class="string">&quot;usb&quot;</span></span><br><span class="line">    DRIVERS==<span class="string">&quot;usb&quot;</span></span><br><span class="line">    ATTRS&#123;authorized&#125;==<span class="string">&quot;1&quot;</span></span><br><span class="line">    ATTRS&#123;avoid_reset_quirk&#125;==<span class="string">&quot;0&quot;</span></span><br><span class="line">    ATTRS&#123;bConfigurationValue&#125;==<span class="string">&quot;1&quot;</span></span><br><span class="line">    ATTRS&#123;bDeviceClass&#125;==<span class="string">&quot;02&quot;</span></span><br><span class="line">    ATTRS&#123;bDeviceProtocol&#125;==<span class="string">&quot;00&quot;</span></span><br><span class="line">    ATTRS&#123;bDeviceSubClass&#125;==<span class="string">&quot;00&quot;</span></span><br><span class="line">    ATTRS&#123;bMaxPacketSize0&#125;==<span class="string">&quot;8&quot;</span></span><br><span class="line">    ATTRS&#123;bMaxPower&#125;==<span class="string">&quot;200mA&quot;</span></span><br><span class="line">    ATTRS&#123;bNumConfigurations&#125;==<span class="string">&quot;1&quot;</span></span><br><span class="line">    ATTRS&#123;bNumInterfaces&#125;==<span class="string">&quot; 2&quot;</span></span><br><span class="line">    ATTRS&#123;bcdDevice&#125;==<span class="string">&quot;0002&quot;</span></span><br><span class="line">    ATTRS&#123;bmAttributes&#125;==<span class="string">&quot;80&quot;</span></span><br><span class="line">    ATTRS&#123;busnum&#125;==<span class="string">&quot;3&quot;</span></span><br><span class="line">    ATTRS&#123;configuration&#125;==<span class="string">&quot;&quot;</span></span><br><span class="line">    ATTRS&#123;devnum&#125;==<span class="string">&quot;29&quot;</span></span><br><span class="line">    ATTRS&#123;devpath&#125;==<span class="string">&quot;1&quot;</span></span><br><span class="line">    ATTRS&#123;idProduct&#125;==<span class="string">&quot;f7ea&quot;</span></span><br><span class="line">    ATTRS&#123;idVendor&#125;==<span class="string">&quot;04d8&quot;</span></span><br><span class="line">    ATTRS&#123;ltm_capable&#125;==<span class="string">&quot;no&quot;</span></span><br><span class="line">    ATTRS&#123;manufacturer&#125;==<span class="string">&quot;Dangerous Prototypes&quot;</span></span><br><span class="line">    ATTRS&#123;maxchild&#125;==<span class="string">&quot;0&quot;</span></span><br><span class="line">    ATTRS&#123;product&#125;==<span class="string">&quot;CDC Test&quot;</span></span><br><span class="line">    ATTRS&#123;quirks&#125;==<span class="string">&quot;0x0&quot;</span></span><br><span class="line">    ATTRS&#123;removable&#125;==<span class="string">&quot;removable&quot;</span></span><br><span class="line">    ATTRS&#123;serial&#125;==<span class="string">&quot;00000001&quot;</span></span><br><span class="line">    ATTRS&#123;speed&#125;==<span class="string">&quot;12&quot;</span></span><br><span class="line">    ATTRS&#123;urbnum&#125;==<span class="string">&quot;78&quot;</span></span><br><span class="line">    ATTRS&#123;version&#125;==<span class="string">&quot; 1.10&quot;</span></span><br></pre></td></tr></table></figure>
-
 <p>на основе которой создадим файл с&nbsp;правилами для <code>udev</code></p>
 <figure class="highlight sh"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">$ sudo nvim /etc/udev/rules.d/99-bus-pirate.rules</span><br></pre></td></tr></table></figure>
-
 <p>Добавляем туда правило которое для заданного набора аттрибутов создаст нам ссылку на&nbsp;созданное устройство.</p>
 <figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">SUBSYSTEM==&quot;tty&quot;, ATTRS&#123;idVendor&#125;==&quot;04d8&quot;, ATTRS&#123;idProduct&#125;==&quot;f7ea&quot;, ATTRS&#123;serial&#125;==&quot;00000001&quot; GROUP=&quot;users&quot;, MODE=&quot;0666&quot;, SYMLINK+=&quot;buspirate&quot;</span><br></pre></td></tr></table></figure>
-
 <p>Вытаскиваем устройство и&nbsp;вставляем обратно&nbsp;&mdash; в&nbsp;папке <code>/dev/</code> у&nbsp;нас теперь появилась ссылка на&nbsp;устройство <code>/dev/buspirate</code>, которую мы&nbsp;и&nbsp;будем использовать для доступа к&nbsp;устройству.</p>
 <img src="/2017/12/29/bus-pirate-linux-setup/dev-listing.png" class="" title="Bus Pirate в списке устройств">
-
 <p>Ещё раз повторюсь&nbsp;&mdash; нужно&nbsp;это, чтобы не&nbsp;гадать какое устройство использовать для подключения, а&nbsp;чётко знать что воткнув именно это устройство я&nbsp;получу конкретное уникальное для него имя в&nbsp;/dev/.</p>
-<h1 id="Работа-с-устройством"><a href="#Работа-с-устройством" class="headerlink" title="Работа с устройством"></a>Работа с&nbsp;устройством</h1><p>Убедившись, что устройство распознано системой попробуем поиграться с&nbsp;ним. Для подключения буду использовать программу <code>screen</code>, хотя подойдёт любой эмулятор терминала. Фактически мы&nbsp;просто подключаемся по&nbsp;RS232&nbsp;терминалу к&nbsp;bus pirate через COM-порт /dev/buspirate</p>
+<h1 id="работа-с-устройством">Работа с&nbsp;устройством</h1>
+<p>Убедившись, что устройство распознано системой попробуем поиграться с&nbsp;ним. Для подключения буду использовать программу <code>screen</code>, хотя подойдёт любой эмулятор терминала. Фактически мы&nbsp;просто подключаемся по&nbsp;RS232&nbsp;терминалу к&nbsp;bus pirate через COM-порт /dev/buspirate</p>
 <figure class="highlight sh"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">$ screen /dev/buspirate 115200 8N1</span><br><span class="line">HiZ&gt;</span><br></pre></td></tr></table></figure>
-
 <p>Ну что&nbsp;&mdash; видим приглашение, что означает, что устройство откликается и&nbsp;готово принимать наши команды.</p>
-<h2 id="Тестирование"><a href="#Тестирование" class="headerlink" title="Тестирование"></a>Тестирование</h2><p>Запустим процедуру самотестирования устройства</p>
+<h2 id="тестирование">Тестирование</h2>
+<p>Запустим процедуру самотестирования устройства</p>
 <figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br></pre></td><td class="code"><pre><span class="line">HiZ&gt;~</span><br><span class="line">Disconnect any devices</span><br><span class="line">Connect (ADC to +3.3V)</span><br><span class="line">Space to continue</span><br><span class="line">&lt;жмём любую клавишу и получаем&gt;</span><br><span class="line">AUX OK</span><br><span class="line">MODE LED OK</span><br><span class="line">PULLUP H OK</span><br><span class="line">PULLUP L OK</span><br><span class="line">VREG OK</span><br><span class="line">EEPROM</span><br><span class="line">SCL OK</span><br><span class="line">SDA OK</span><br><span class="line">...</span><br></pre></td></tr></table></figure>
-
 <p>После чего видим кучу самопроверок, оканчивающихся на&nbsp;<code>OK</code> из&nbsp;чего я&nbsp;делаю вывод, что самодиагностика работает и&nbsp;устройство не&nbsp;имеет каких-либо проблем.</p>
 <p>Ну и&nbsp;посмотрим, что у&nbsp;нас за&nbsp;прошивка:</p>
 <figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">HiZ&gt;i</span><br><span class="line">Bus Pirate v4</span><br><span class="line">Firmware v6.1 r1676</span><br><span class="line">DEVID:0x1019 REVID:0x0004 (24FJ256GB106 UNK)</span><br><span class="line">http://dangerousprototypes.com</span><br></pre></td></tr></table></figure>
-
 <p>Увы&nbsp;&mdash; не&nbsp;самое новьё, но&nbsp;и&nbsp;не&nbsp;совсем уж&nbsp;старая. Похоже на&nbsp;последнюю официальную, в&nbsp;то&nbsp;время как есть уже Community Edition 7-й версии. Будет время&nbsp;&mdash; прошьюсь на&nbsp;что-то более новое, а&nbsp;пока и&nbsp;так сойдёт.</p>
-<p>Подробнее о&nbsp;командах Bus Pirate можно почитать <a target="_blank" rel="noopener" href="http://dangerousprototypes.com/docs/Bus_Pirate_self-test_guide/ru">тут</a><br>По прошивке можно почитать <a target="_blank" rel="noopener" href="http://dangerousprototypes.com/docs/Bus_Pirate_v4_firmware_updates">тут</a></p>
-<h1 id="AVR-программатор"><a href="#AVR-программатор" class="headerlink" title="AVR программатор"></a>AVR программатор</h1><p>Тесты это конечно здорово, но&nbsp;хотелось&nbsp;бы&nbsp;каких-то более конкретных примеров. Поэтому решил попробовать bus pirate в&nbsp;качестве AVR программатора&nbsp;&mdash; тем более, что под рукой как раз есть проект на&nbsp;attiny13a.</p>
+<p>Подробнее о&nbsp;командах Bus Pirate можно почитать <a target="_blank" rel="noopener" href="http://dangerousprototypes.com/docs/Bus_Pirate_self-test_guide/ru">тут</a><br>
+По прошивке можно почитать <a target="_blank" rel="noopener" href="http://dangerousprototypes.com/docs/Bus_Pirate_v4_firmware_updates">тут</a></p>
+<h1 id="avr-программатор">AVR программатор</h1>
+<p>Тесты это конечно здорово, но&nbsp;хотелось&nbsp;бы&nbsp;каких-то более конкретных примеров. Поэтому решил попробовать bus pirate в&nbsp;качестве AVR программатора&nbsp;&mdash; тем более, что под рукой как раз есть проект на&nbsp;attiny13a.</p>
 <p>Итак для начала подсоединяем bus pirate к&nbsp;контроллеру согласно таблице:</p>
 <table>
 <thead>
 <tr>
-<th align="center">Bus Pirate</th>
-<th align="center">Attiny13A</th>
+<th style="text-align:center">Bus Pirate</th>
+<th style="text-align:center">Attiny13A</th>
 <th>Примечение</th>
 </tr>
 </thead>
-<tbody><tr>
-<td align="center">CS</td>
-<td align="center">NRST</td>
+<tbody>
+<tr>
+<td style="text-align:center">CS</td>
+<td style="text-align:center">NRST</td>
 <td></td>
 </tr>
 <tr>
-<td align="center">+5V</td>
-<td align="center">Vcc</td>
+<td style="text-align:center">+5V</td>
+<td style="text-align:center">Vcc</td>
 <td></td>
 </tr>
 <tr>
-<td align="center">GND</td>
-<td align="center">GND</td>
+<td style="text-align:center">GND</td>
+<td style="text-align:center">GND</td>
 <td></td>
 </tr>
 <tr>
-<td align="center">MOSI</td>
-<td align="center">MOSI</td>
+<td style="text-align:center">MOSI</td>
+<td style="text-align:center">MOSI</td>
 <td></td>
 </tr>
 <tr>
-<td align="center">MISO</td>
-<td align="center">MISO</td>
+<td style="text-align:center">MISO</td>
+<td style="text-align:center">MISO</td>
 <td></td>
 </tr>
 <tr>
-<td align="center">CLK</td>
-<td align="center">SCK</td>
+<td style="text-align:center">CLK</td>
+<td style="text-align:center">SCK</td>
 <td></td>
 </tr>
 <tr>
-<td align="center">AUX</td>
-<td align="center">XTAL1</td>
+<td style="text-align:center">AUX</td>
+<td style="text-align:center">XTAL1</td>
 <td>необязательно</td>
 </tr>
-</tbody></table>
-<p>У меня в&nbsp;итоге получился вот такой франкенштейн. Нужно будт конечно на&nbsp;будущее сделать более подходящий шнурок и&nbsp;разъём. </p>
+</tbody>
+</table>
+<p>У меня в&nbsp;итоге получился вот такой франкенштейн. Нужно будт конечно на&nbsp;будущее сделать более подходящий шнурок и&nbsp;разъём.</p>
 <img src="/2017/12/29/bus-pirate-linux-setup/bus-pirate-as-avr-programmer.jpg" class="" title="Подключение микроконтроллера к Bus Pirate">
-
-<p>В качестве софта для прошивки используем старый добрый <code>avrdude</code> &hellip;., а&nbsp;собственно под linux у&nbsp;нас вроде как больше-то вариантов и&nbsp;нет. По&nbsp;счастью <code>avrdude</code> прекрасно умеет работать с&nbsp;bus pirate. Пробуем:</p>
+<p>В качестве софта для прошивки используем старый добрый <code>avrdude</code> &hellip;, а&nbsp;собственно под linux у&nbsp;нас вроде как больше-то вариантов и&nbsp;нет. По&nbsp;счастью <code>avrdude</code> прекрасно умеет работать с&nbsp;bus pirate. Пробуем:</p>
 <figure class="highlight sh"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br></pre></td><td class="code"><pre><span class="line">$ avrdude -c buspirate -P /dev/buspirate -p t13 -v</span><br><span class="line"></span><br><span class="line">avrdude: Version 6.3-20171130</span><br><span class="line">         Copyright (c) 2000-2005 Brian Dean, http://www.bdmicro.com/</span><br><span class="line">         Copyright (c) 2007-2014 Joerg Wunsch</span><br><span class="line"></span><br><span class="line">         System wide configuration file is <span class="string">&quot;/etc/avrdude.conf&quot;</span></span><br><span class="line">         User configuration file is <span class="string">&quot;/home/roman/.avrduderc&quot;</span></span><br><span class="line">         User configuration file does not exist or is not a regular file, skipping</span><br><span class="line"></span><br><span class="line">         Using Port                    : /dev/buspirate</span><br><span class="line">         Using Programmer              : buspirate</span><br><span class="line">         AVR Part                      : ATtiny13</span><br><span class="line">         ...</span><br><span class="line">         Programmer Type : BusPirate</span><br><span class="line">         Description     : The Bus Pirate</span><br><span class="line"></span><br><span class="line">Attempting to initiate BusPirate binary mode...</span><br><span class="line">BusPirate binmode version: 1</span><br><span class="line">BusPirate SPI version: 1</span><br><span class="line">avrdude: Paged flash write enabled.</span><br><span class="line">AVR Extended Commands version 20553</span><br><span class="line">avrdude: initialization failed, rc=-2</span><br><span class="line">         Double check connections and try again, or use -F to override</span><br><span class="line">         this check.</span><br><span class="line"></span><br><span class="line">BusPirate reset failed. You may need to powercycle it.</span><br></pre></td></tr></table></figure>
-
 <p>В общем получили фигу&nbsp;&mdash; ничего не&nbsp;работает. По&nbsp;счастью нашлись страдальцы, которые поимели похожую проблему, но&nbsp;в&nbsp;отличие от&nbsp;меня смогли решить&nbsp;её.&nbsp;Я&nbsp;лишь воспользуюсь чужим опытом. Какой-то индонезийский умелец <a target="_blank" rel="noopener" href="http://rndc.or.id/wiki/index.php?title=Troubleshooting_Avrdude_Dan_Bus_Pirate">предложил решение</a>, которое действительно работает. Нужно лишь добавить несколько ключей к&nbsp;<code>avrdude</code>, а&nbsp;именно&nbsp;&mdash; <code>-x ascii -x nopagedread -x nopagedwrite</code> и&nbsp;типа всё должно заработать. Итак пробуем:</p>
 <figure class="highlight sh"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br></pre></td><td class="code"><pre><span class="line">$ avrdude -c buspirate -P /dev/buspirate -p t13 -v -x ascii -x nopagedread -x nopagedwrite</span><br><span class="line">avrdude: Version 6.3-20171130</span><br><span class="line">...</span><br><span class="line">         Programmer Type : BusPirate</span><br><span class="line">         Description     : The Bus Pirate</span><br><span class="line"></span><br><span class="line">Attempting to initiate BusPirate ASCII mode...</span><br><span class="line">BusPirate: using ASCII mode</span><br><span class="line">BusPirate is now configured <span class="keyword">for</span> SPI</span><br><span class="line">avrdude: AVR device initialized and ready to accept instructions</span><br><span class="line"></span><br><span class="line">Reading | <span class="comment">################################################## | 100% 0.01s</span></span><br><span class="line"></span><br><span class="line">avrdude: Device signature = 0x1e9007 (probably t13)</span><br><span class="line">avrdude: safemode: lfuse reads as 6A</span><br><span class="line">avrdude: safemode: hfuse reads as FF</span><br><span class="line"></span><br><span class="line">avrdude: safemode: lfuse reads as 6A</span><br><span class="line">avrdude: safemode: hfuse reads as FF</span><br><span class="line">avrdude: safemode: Fuses OK (E:FF, H:FF, L:6A)</span><br><span class="line"></span><br></pre></td></tr></table></figure>
-
 <p>Всё получилось! Я&nbsp;так-же попробовал заливать в&nbsp;контроллер настоящую прошивку и&nbsp;всё получилось тоже без проблем.</p>
 <p>Более подробно про использование bus pirate в&nbsp;качестве программатора vожно почитать <a target="_blank" rel="noopener" href="http://dangerousprototypes.com/docs/Bus_Pirate_AVR_Programming">тут</a></p>
-<h1 id="Первые-итоги"><a href="#Первые-итоги" class="headerlink" title="Первые итоги"></a>Первые итоги</h1><p>Ну во&nbsp;первых как минимум я&nbsp;получил живое и&nbsp;работающее устройство с&nbsp;относительно новой прошивкой&nbsp;&mdash; братья китайцы не&nbsp;обманули и&nbsp;это уже хорошо.</p>
+<h1 id="первые-итоги">Первые итоги</h1>
+<p>Ну во&nbsp;первых как минимум я&nbsp;получил живое и&nbsp;работающее устройство с&nbsp;относительно новой прошивкой&nbsp;&mdash; братья китайцы не&nbsp;обманули и&nbsp;это уже хорошо.</p>
 <p>Как минимум я&nbsp;могу использовать его в&nbsp;качестве программатора для атмеловских контроллеров. Пока что он&nbsp;работает стабильнее, чем китайский usbasp (у меня <a target="_blank" rel="noopener" href="http://ali.pub/25hhxw">вот такой</a>), который периодически не&nbsp;может прошить фьюзы, пока не&nbsp;выполнишь стирание чипа, в&nbsp;результате чего в&nbsp;моём Makefile-е для прошивки используется 2&nbsp;команды&nbsp;&mdash; очистка, а&nbsp;потом прошивка. Bus pirate в&nbsp;этом плане работает стабильно и&nbsp;таких проблем не&nbsp;имеет.</p>
 <p>Правда в&nbsp;качестве программатора он&nbsp;имеет нюанс&nbsp;&mdash; питание подаётся только на&nbsp;время прошивки и&nbsp;в&nbsp;остальное время выключается. Я&nbsp;как-то привык запитывать контроллер прямо от&nbsp;программатора и&nbsp;такое поведение немного необычно, но&nbsp;может оно и&nbsp;к&nbsp;лучшему&nbsp;&mdash; отучусь от&nbsp;этой дурацкой привычки.</p>
 <p>В общем в&nbsp;дальнейшем попробую использовать эту эту железяку в&nbsp;различных применениях о&nbsp;чём конечно&nbsp;же&nbsp;отпишусь в&nbsp;очередной статье.</p>
-<h1 id="Источники"><a href="#Источники" class="headerlink" title="Источники"></a>Источники</h1><ul>
+<h1 id="источники">Источники</h1>
+<ul>
 <li><a target="_blank" rel="noopener" href="https://wiki.archlinux.org/index.php/Bus_pirate">https://wiki.archlinux.org/index.php/Bus_pirate</a></li>
 <li><a target="_blank" rel="noopener" href="http://jumptuck.com/2010/01/21/writing-a-bus-pirate-udev-rule/">http://jumptuck.com/21.01.2010/writing-a-bus-pirate-udev-rule/</a></li>
 <li><a target="_blank" rel="noopener" href="https://www.bigmessowires.com/2013/11/19/what-is-the-bus-pirate/">https://www.bigmessowires.com/19.11.2013/what-is-the-bus-pirate/</a></li>

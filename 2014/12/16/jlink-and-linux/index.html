@@ -43,13 +43,12 @@
     
     <p>Получил по&nbsp;почте китайский JLink. Ну&nbsp;и&nbsp;конечно-же захотелось подключить и&nbsp;проверить по&nbsp;крайней мере живое&nbsp;ли&nbsp;оно, особенно учитывая тот факт, что диск в&nbsp;комплекте был разбит вдребезги, а&nbsp;продавец отказался помочь добыть заветный софт. Как нетрудно догадаться из&nbsp;заголовка устройство в&nbsp;результате было убито. Расскажу как&nbsp;же&nbsp;таки его восстановить.</p>
 <span id="more"></span>
-
-<h1 id="Как-убить-JLink"><a href="#Как-убить-JLink" class="headerlink" title="Как убить JLink"></a>Как убить JLink</h1><p>Итак первым делом после подключения проверил список USB устройств.</p>
+<h1 id="как-убить-jlink">Как убить JLink</h1>
+<p>Итак первым делом после подключения проверил список USB устройств.</p>
 <pre class="code language language-bash"><code class="language language-bash">$ lsusb
 <span class="token punctuation">..</span>.
 Bus 003 Device 004: ID <span class="token number">1366</span>:0101 SEGGER J-Link PLUS
 <span class="token punctuation">..</span>.</code></pre>
-
 <p>Отлично&nbsp;&mdash; как минимум устройство обнаружилось.</p>
 <p>Далее отсюда <a target="_blank" rel="noopener" href="https://www.segger.com/jlink-software.html">https://www.segger.com/jlink-software.html</a> были установлены утилиты для работы с&nbsp;JLink. Я&nbsp;использую для работы Linux поэтому использована была именно линуксовая версия.</p>
 <p>Ну и&nbsp;далее был запущен J-Link Commander</p>
@@ -60,12 +59,11 @@ Updating firmware:  J-Link ARM V8 compiled Sep <span class="token number">22</sp
 Replacing firmware: J-Link ARM V8 compiled Sep  <span class="token number">2</span> <span class="token number">2011</span> <span class="token number">17</span>:54:36
 Communication timeout. Emulator did not re-enumerate.
 J-Link<span class="token operator">></span></code></pre>
-
 <p>Вот тут-то и&nbsp;кроется засада. В&nbsp;этом месте JLink автоматически находит новую версию прошивки и&nbsp;тянет её&nbsp;с&nbsp;интернета. Далее прошивка обновляется и&nbsp;большой привет&nbsp;&mdash; у&nbsp;нас в&nbsp;руках чёрный пластмассовый кирпич.</p>
 <p>При повторном подключении JLink его даже не&nbsp;видно среди USB устройств.</p>
-<h1 id="Как-восстанавить-JLink"><a href="#Как-восстанавить-JLink" class="headerlink" title="Как восстанавить JLink"></a>Как восстанавить JLink</h1><p>Начитавшись всякого на&nbsp;профильных форумах для начала решил восстановить все как было. Для этого нашёл в&nbsp;сети прошивку для JLink, вскрыл корпус и&nbsp;выполнил шаманский ритуал для восстановления. Многие пишут, что у&nbsp;них нужные для обряда контакты не&nbsp;выведены, но&nbsp;мне повезло&nbsp;&mdash; у&nbsp;меня они были выполнены в&nbsp;виде штырьков, были подписаны и&nbsp;соответственно легко замыкались обычным джампером о&nbsp;старого винчестера. В&nbsp;общем полный список действий:</p>
+<h1 id="как-восстанавить-jlink">Как восстанавить JLink</h1>
+<p>Начитавшись всякого на&nbsp;профильных форумах для начала решил восстановить все как было. Для этого нашёл в&nbsp;сети прошивку для JLink, вскрыл корпус и&nbsp;выполнил шаманский ритуал для восстановления. Многие пишут, что у&nbsp;них нужные для обряда контакты не&nbsp;выведены, но&nbsp;мне повезло&nbsp;&mdash; у&nbsp;меня они были выполнены в&nbsp;виде штырьков, были подписаны и&nbsp;соответственно легко замыкались обычным джампером о&nbsp;старого винчестера. В&nbsp;общем полный список действий:</p>
 <img src="/2014/12/16/jlink-and-linux/j-link-inside.png" class="" title="Перемычки JLink">
-
 <p>Стираем flash</p>
 <ul>
 <li>Отключаем USB</li>
@@ -100,11 +98,11 @@ S/N: <span class="token number">158005115</span>
 Feature<span class="token punctuation">(</span>s<span class="token punctuation">)</span>: RDI,FlashDL,FlashBP,JFlash,GDBFull
 VTarget <span class="token operator">=</span> <span class="token number">0</span>.000V
 J-Link<span class="token operator">></span></code></pre>
-
 <p>На этом геморрой с&nbsp;подключением JLink считаю законченным.</p>
 <p>Для Windows пишут, что можно просто использовать старую версию J-Link Commander (меньше 4.40), но&nbsp;для Linux старых версий&nbsp;нет, поэтому мне этот способ не&nbsp;подошёл.</p>
-<h1 id="Ссылки-по-теме"><a href="#Ссылки-по-теме" class="headerlink" title="Ссылки по теме"></a>Ссылки по&nbsp;теме</h1><ul>
-<li><a target="_blank" rel="noopener" href="http://electronix.ru/forum/index.php?showtopic=59841&st=540#post-main-1284937">Правильная прошивка</a></li>
+<h1 id="ссылки-по-теме">Ссылки по&nbsp;теме</h1>
+<ul>
+<li><a target="_blank" rel="noopener" href="http://electronix.ru/forum/index.php?showtopic=59841&amp;st=540#post-main-1284937">Правильная прошивка</a></li>
 <li><a target="_blank" rel="noopener" href="http://electronix.ru/forum/lofiversion/index.php/t107786.html">http://electronix.ru/forum/lofiversion/index.php/t107786.html</a></li>
 <li><a target="_blank" rel="noopener" href="https://delfer.ru/2011/12/03/%D0%BA%D0%B8%D1%82%D0%B0%D0%B9%D1%81%D0%BA%D0%B8%D0%B9-j-link-v8/">https://delfer.ru/03.12.2011/китайский-j-link-v8/</a></li>
 <li><a target="_blank" rel="noopener" href="http://we.easyelectronics.ru/JustACat/j-link-s-aliexpress-za-1689usd-1899.html">http://we.easyelectronics.ru/JustACat/j-link-s-aliexpress-za-1689usd-1899.html</a></li>

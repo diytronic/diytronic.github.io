@@ -43,10 +43,12 @@
     
     <p>Решил тут на&nbsp;досуге поиграться с&nbsp;ардуинкой. Есть у&nbsp;меня кучка китайских энкодеров и&nbsp;вот руки наконец дошли их&nbsp;протестировать с&nbsp;Arduino и&nbsp;заодно разобраться с&nbsp;вопросом их&nbsp;подключения и&nbsp;использования.</p>
 <span id="more"></span>
-
 <p>Собственно очевидно, что получать состояние энкодера можно двумя способами. Это опрос порта и&nbsp;прерывание.</p>
-<h1 id="Периодический-опрос-порта"><a href="#Периодический-опрос-порта" class="headerlink" title="Периодический опрос порта"></a>Периодический опрос порта</h1><p>Подробно разобран вот тут <a target="_blank" rel="noopener" href="http://cxem.net/arduino/arduino8.php">http://cxem.net/arduino/arduino8.php</a><br>В общем-то не&nbsp;скажу, что мне этот способ интересен&nbsp;&mdash; греть воздух и&nbsp;тратить энергию опрашивая энкодер в&nbsp;большинстве случаев лишь пустая трата ресурсов поэтому останавливаться на&nbsp;нём не&nbsp;буду.</p>
-<h1 id="Прерывания"><a href="#Прерывания" class="headerlink" title="Прерывания"></a>Прерывания</h1><p>Вот это самое оно&nbsp;&mdash; контроллер спит и&nbsp;просыпается лишь для того, чтобы считать значение энкодера, выполнить какие-то действия и&nbsp;снова уснуть. Минусом является&nbsp;то, что не&nbsp;все входы контроллера могут генерировать прерывание.</p>
+<h1 id="периодический-опрос-порта">Периодический опрос порта</h1>
+<p>Подробно разобран вот тут <a target="_blank" rel="noopener" href="http://cxem.net/arduino/arduino8.php">http://cxem.net/arduino/arduino8.php</a><br>
+В общем-то не&nbsp;скажу, что мне этот способ интересен&nbsp;&mdash; греть воздух и&nbsp;тратить энергию опрашивая энкодер в&nbsp;большинстве случаев лишь пустая трата ресурсов поэтому останавливаться на&nbsp;нём не&nbsp;буду.</p>
+<h1 id="прерывания">Прерывания</h1>
+<p>Вот это самое оно&nbsp;&mdash; контроллер спит и&nbsp;просыпается лишь для того, чтобы считать значение энкодера, выполнить какие-то действия и&nbsp;снова уснуть. Минусом является&nbsp;то, что не&nbsp;все входы контроллера могут генерировать прерывание.</p>
 <p>Неплохой материал по&nbsp;теме нашёл тут <a target="_blank" rel="noopener" href="http://www.circuitsathome.com/mcu/reading-rotary-encoder-on-arduino">http://www.circuitsathome.com/mcu/reading-rotary-encoder-on-arduino</a> и&nbsp;уже было дело ломанулся попробовать живьём, но&nbsp;тут мне попалась на&nbsp;глаза библиотечка с&nbsp;нехитрым названием <a target="_blank" rel="noopener" href="https://www.pjrc.com/teensy/td_libs_Encoder.html">Encoder</a>, в&nbsp;которой вся грязная работа уже сделана и&nbsp;к&nbsp;тому-же утверждается, что процедуры обработки прерываний написаны на&nbsp;ассемблере и&nbsp;таким образом можно ожидать достаточно высокой производительности.</p>
 <p>Библиотека достаточно универсальна&nbsp;&mdash; подключенный энкодер может работать в&nbsp;следующих режимах</p>
 <ul>
@@ -55,7 +57,8 @@
 <li>низкая производительность: оба пина опрашиваются</li>
 </ul>
 <p>В комплекте идут примеры кода в&nbsp;виде ардуино скетчей.</p>
-<h1 id="Пробуем"><a href="#Пробуем" class="headerlink" title="Пробуем"></a>Пробуем</h1><p>Для начала качаем библиотеку <a target="_blank" rel="noopener" href="https://www.pjrc.com/teensy/arduino_libraries/Encoder.zip">Encoder.zip</a> (version 1.2), распаковываем её&nbsp;в&nbsp;папку для библиотек настроенную в&nbsp;IDE. Пробуем скетч из&nbsp;комплекта библиотеки.</p>
+<h1 id="пробуем">Пробуем</h1>
+<p>Для начала качаем библиотеку <a target="_blank" rel="noopener" href="https://www.pjrc.com/teensy/arduino_libraries/Encoder.zip">Encoder.zip</a> (version 1.2), распаковываем её&nbsp;в&nbsp;папку для библиотек настроенную в&nbsp;IDE. Пробуем скетч из&nbsp;комплекта библиотеки.</p>
 <pre class="code language language-c line-numbers"><code class="language language-c"><span class="token comment">/* Encoder Library - Basic Example
  * http://www.pjrc.com/teensy/td_libs_Encoder.html
  *
@@ -84,7 +87,6 @@ Encoder <span class="token function">myEnc</span><span class="token punctuation"
     Serial<span class="token punctuation">.</span><span class="token function">println</span><span class="token punctuation">(</span>newPosition<span class="token punctuation">)</span><span class="token punctuation">;</span>
   <span class="token punctuation">}</span>
 <span class="token punctuation">}</span><span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
-
 <p>Библиотека прекрасно работает. Проверено!</p>
   </div>
 
