@@ -215,9 +215,9 @@
     
     <category term="mynewt" scheme="https://diytronic.ru/tags/mynewt/"/>
     
-    <category term="nrf51" scheme="https://diytronic.ru/tags/nrf51/"/>
-    
     <category term="rtos" scheme="https://diytronic.ru/tags/rtos/"/>
+    
+    <category term="nrf51" scheme="https://diytronic.ru/tags/nrf51/"/>
     
     <category term="ble-beacon" scheme="https://diytronic.ru/tags/ble-beacon/"/>
     
@@ -267,9 +267,9 @@
     
     <category term="mynewt" scheme="https://diytronic.ru/tags/mynewt/"/>
     
-    <category term="ibeacon" scheme="https://diytronic.ru/tags/ibeacon/"/>
-    
     <category term="nrf51" scheme="https://diytronic.ru/tags/nrf51/"/>
+    
+    <category term="ibeacon" scheme="https://diytronic.ru/tags/ibeacon/"/>
     
     <category term="nrf52" scheme="https://diytronic.ru/tags/nrf52/"/>
     
@@ -294,9 +294,9 @@
     <category term="uncategorized" scheme="https://diytronic.ru/categories/uncategorized/"/>
     
     
-    <category term="nrf51822" scheme="https://diytronic.ru/tags/nrf51822/"/>
-    
     <category term="mcu" scheme="https://diytronic.ru/tags/mcu/"/>
+    
+    <category term="nrf51822" scheme="https://diytronic.ru/tags/nrf51822/"/>
     
     <category term="mynewt" scheme="https://diytronic.ru/tags/mynewt/"/>
     
