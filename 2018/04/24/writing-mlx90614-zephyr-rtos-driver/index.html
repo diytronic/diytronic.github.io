@@ -1,0 +1,179 @@
+<!DOCTYPE html><html lang="ru" prefix="og: http://ogp.me/ns# ya: http://webmaster.yandex.ru/vocabularies/config article: http://ogp.me/ns/article#"><head><meta charset="utf-8"><meta name="author" content="Роман Татауров"><title>Пишем драйвер ИК термодатчика MLX90614 для Zephyr RTOS</title><meta name="description" content="Итак в продолжение темы о драйверах для Zephyr переходим непосредственно к созданию конкретного драйвера устройства. В качестве подопытного я выбрал ИК термодатчик MLX90614."><meta name="keywords" content="Zephyr RTOS,Драйвера,MLX90614,SMBus,I&lt;sup&gt;2&lt;/sup&gt;C,PWM"><meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1"><meta property="og:title" content=""><meta property="og:site_name" content="DiyTronic"><meta property="og:locale" content="ru_RU"><meta property="og:url" content="https://diytronic.ru/2018/04/24/writing-mlx90614-zephyr-rtos-driver/"><meta property="og:type" content="article"><meta property="og:description"><meta property="article:tag" content="[&quot;Zephyr RTOS&quot;,&quot;Драйвера&quot;,&quot;MLX90614&quot;,&quot;SMBus&quot;,&quot;I&lt;sup&gt;2&lt;/sup&gt;C&quot;,&quot;PWM&quot;]"><meta property="article:section" content="[&quot;Программирование&quot;]"><meta property="article:published_time" content="2018-04-23T22:13:28.000Z"><meta property="article:modified_time" content="2018-04-23T22:13:28.000Z"><meta name="DC.Title" content="Пишем драйвер ИК термодатчика MLX90614 для Zephyr RTOS"><meta name="DC.Subject"><meta name="DC.Creator" content="Роман Татауров"><meta name="DC.Creator.Name" content="Роман Татауров"><meta name="DC.Date" scheme="WTN8601" content="2018-04-23T22:13:28.000Z"><meta name="DC.Type" content="Text"><meta name="DC.Language" content="ru-RU"><meta name="apple-mobile-web-app-title" content="WebHive"><meta name="application-name" content="WebHive"><meta name="msapplication-TileColor" content="#2b5797"><meta name="theme-color" content="#ffffff"><link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png"><link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png"><link rel="icon" type="image/png" sizes="192x192" href="/android-chrome-192x192.png"><link rel="icon" type="image/png" sizes="16x16" href="/favicon-16x16.png"><link rel="manifest" href="/site.webmanifest"><link rel="mask-icon" href="/safari-pinned-tab.svg" color="#5bbad5"><link type="text/css" rel="stylesheet" href="/css/app-66a13052.css"><link rel="alternate" href="/atom.xml" title="DiyTronic | Заметки об электронике, программировании, 3D-печати" type="application/atom+xml"><meta name="generator" content="Hexo 5.4.2"></head><body class="page" itemscope itemtype="http://schema.org/WebPage" itemid="https://diytronic.ru/2018/04/24/writing-mlx90614-zephyr-rtos-driver/"><section class="header"> <div class="header__content"><div class="content-wrapper content-wrapper_header"><div class="title-box"><button class="button button_header button_left js-main-nav"><span class="icon"><svg width="24" height="24" viewBox="0 0 1000 1000"><path d="M108,206h784c54.1,0,98-43.9,98-98c0-54.1-43.9-98-98-98H108c-54.1,0-98,43.9-98,98C10,162.1,53.9,206,108,206z M892,402H108c-54.1,0-98,43.9-98,98c0,54.1,43.9,98,98,98h784c54.1,0,98-43.9,98-98C990,445.9,946.1,402,892,402z M892,794H108c-54.1,0-98,43.9-98,98c0,54.1,43.9,98,98,98h784c54.1,0,98-43.9,98-98C990,837.9,946.1,794,892,794z"></path></svg></span></button><a href="/"><img class="title-box__logo logo logo--main" src="/images/logo.png"/></a><h1 class="title-box__title"><a href="/">DiyTronic</a></h1><div class="title-box__description"><a href="/">Заметки об электронике, программировании, 3D-печати</a></div><button class="button button_header button_right js-search"><span class="icon"><svg width="24" height="24" viewBox="0 0 1000 1000"><path d="M688.5,424.6c0-72.6-25.8-134.8-77.4-186.4s-113.8-77.4-186.4-77.4s-134.8,25.8-186.4,77.4S160.8,352,160.8,424.6c0,72.6,25.8,134.8,77.4,186.4c51.6,51.6,113.8,77.4,186.4,77.4S559.4,662.6,611,611C662.6,559.4,688.5,497.3,688.5,424.6L688.5,424.6z M990,914.6c0,20.4-7.5,38.1-22.4,53c-14.9,14.9-32.6,22.4-53,22.4c-21.2,0-38.9-7.5-53-22.4l-202-201.4c-70.3,48.7-148.6,73-235,73c-56.1,0-109.8-10.9-161.1-32.7s-95.4-51.2-132.5-88.3c-37.1-37.1-66.5-81.3-88.3-132.5C20.9,534.5,10,480.8,10,424.6s10.9-109.8,32.7-161.1S93.9,168.1,131,131c37.1-37.1,81.3-66.6,132.5-88.3S368.5,10,424.6,10s109.8,10.9,161.1,32.7c51.2,21.8,95.4,51.2,132.5,88.3c37.1,37.1,66.6,81.3,88.3,132.5c21.8,51.2,32.7,104.9,32.7,161.1c0,86.4-24.3,164.7-73,235l202,202C982.7,876.1,990,893.8,990,914.6L990,914.6z"></path></svg></span></button></div><nav class="main-nav" itemscope itemtype="http://schema.org/SiteNavigationElement"><ul class="main-menu-bar"><li class="main-menu-bar__item"><a class="main-menu-bar__item-link" itemprop="url" href="/">Главная</a></li><li class="main-menu-bar__item"><a class="main-menu-bar__item-link" itemprop="url" href="/categories/uncategorized/">Разное</a></li><li class="main-menu-bar__item"><a class="main-menu-bar__item-link" itemprop="url" href="/categories/3d-print/">3D Печать</a></li><li class="main-menu-bar__item"><a class="main-menu-bar__item-link" itemprop="url" href="/categories/programming/">Программирование</a></li><li class="main-menu-bar__item"><a class="main-menu-bar__item-link" itemprop="url" href="/categories/electronics/">Электроника</a></li><li class="main-menu-bar__item"><a class="main-menu-bar__item-link" itemprop="url" href="/categories/repair/">Ремонт</a></li><li class="main-menu-bar__item"><a class="main-menu-bar__item-link js-#{i}" itemprop="url" href="/archives">Архив</a></li><li class="main-menu-bar__item"><a class="main-menu-bar__item-link js-#{i}" itemprop="url" href="/search">Поиск</a></li></ul></nav><script>var yandexSearchOptions = {
+  action: '/search/',
+  arrow: false,
+  bg: 'transparent',
+  fontsize: 16,
+  fg: '#FFF',
+  language: 'ru',
+  logo: 'rb',
+  publicname: 'Поиск по сайту www.diytronic.ru',
+  suggest: false,
+  target: '_self',
+  tld: 'ru',
+  type: 2,
+  searchid: 2298791,
+  webopt: false,
+  websearch: false,
+  input_fg: '#FFF',
+  input_bg: 'transparent',
+  input_fontStyle: 'normal',
+  input_fontWeight: 'normal',
+  input_placeholder: 'Поиск по сайту',
+  input_placeholderColor: '#FFF',
+  input_borderColor: 'transparent'
+}
+</script><div class="content-wrapper__search-box"><button class="button button_type_close button__control js-close-search"><span class="icon"><svg width="32" height="32" viewBox="0 0 348.333 348.334"><path d="M336.559,68.611L231.016,174.165l105.543,105.549c15.699,15.705,15.699,41.145,0,56.85   c-7.844,7.844-18.128,11.769-28.407,11.769c-10.296,0-20.581-3.919-28.419-11.769L174.167,231.003L68.609,336.563   c-7.843,7.844-18.128,11.769-28.416,11.769c-10.285,0-20.563-3.919-28.413-11.769c-15.699-15.698-15.699-41.139,0-56.85   l105.54-105.549L11.774,68.611c-15.699-15.699-15.699-41.145,0-56.844c15.696-15.687,41.127-15.687,56.829,0l105.563,105.554   L279.721,11.767c15.705-15.687,41.139-15.687,56.832,0C352.258,27.466,352.258,52.912,336.559,68.611z"></path></svg></span></button><div class="ya-site-form ya-site-form_inited_no" onclick="return yandexSearchOptions"><form class="search" action="https://yandex.ru/sitesearch" method="get" target="_self"><input type="hidden" name="searchid" value="2298791"/><input type="hidden" name="l10n" value="ru"/><input type="hidden" name="reqenc" value=""/><span class="input input_search"><span class="input__box"><input class="input__control" placeholder="Поиск" name="text"></span></span><button class="button button_type_submit button_search button__control" type="submit"><span class="icon"><svg width="24" height="24" viewBox="0 0 512 512"><path d="M445,386.7l-84.8-85.9c13.8-24.1,21-50.9,21-77.9c0-87.6-71.2-158.9-158.6-158.9C135.2,64,64,135.3,64,222.9c0,87.6,71.2,158.9,158.6,158.9c27.9,0,55.5-7.7,80.1-22.4l84.4,85.6c1.9,1.9,4.6,3.1,7.3,3.1c2.7,0,5.4-1.1,7.3-3.1l43.3-43.8C449,397.1,449,390.7,445,386.7z M222.6,125.9c53.4,0,96.8,43.5,96.8,97c0,53.5-43.4,97-96.8,97c-53.4,0-96.8-43.5-96.8-97C125.8,169.4,169.2,125.9,222.6,125.9z"></path></svg></span></button></form></div></div><footer class="copyright copyright--sidebar">&copy; 2023 DiyTronic</footer></div></div><div class="header__overlay"></div></section><div class="content-wrapper content-wrapper_main"><main class="content content_main" itemprop="mainEntityOfPage"> <article class="post post--full" itemscope itemtype="http://schema.org/Article" itemprop="mainEntityOfPage">
+  <header>
+    <h2 class="post__title" itemprop="headline">
+      <a class="link link__control link_post-title" href="/2018/04/24/writing-mlx90614-zephyr-rtos-driver/">
+        Пишем драйвер ИК термодатчика MLX90614 для Zephyr RTOS
+      </a>
+    </h2>
+    <div class="post__meta">
+      <time class="post__date" datetime="2018-04-23T22:13:28.000Z" itemprop="datePublished">
+        24 апреля 2018
+      </time>
+      <span class="post__author" itemscope itemtype="http://schema.org/Person" itemprop="author"> Автор: <span itemprop="name">Роман Татауров</span></span>
+      <meta itemscope itescope itemType="https://schema.org/Person" itemprop="publisher" content="Роман Татауров" />
+      <a class="link link__control link_comments-count" href="https://diytronic.ru/2018/04/24/writing-mlx90614-zephyr-rtos-driver/#disqus_thread"></a>
+    </div>
+  </header>
+
+  <div class="post__entry" itemprop="articleBody">
+    
+    <p>Итак в&nbsp;продолжение темы о&nbsp;драйверах для Zephyr переходим непосредственно к&nbsp;созданию конкретного драйвера устройства. В&nbsp;качестве подопытного я&nbsp;выбрал ИК&nbsp;термодатчик MLX90614.</p>
+<span id="more"></span>
+
+<p>Этот датчик я&nbsp;использовал в&nbsp;одной поделке&nbsp;&mdash; фактически это терморегулятор для одного устройства. Оно уже практически в&nbsp;рабочем состоянии, но&nbsp;делано было на&nbsp;ATmega8. В&nbsp;силу ряда причин хочу переделать на&nbsp;STM32. Это я&nbsp;собственно к&nbsp;тому, что драйвер будет не&nbsp;просто демонстрационным псевдокодом, а&nbsp;вполне конкретным куском кода, который я&nbsp;даже попробую протолкнуть в&nbsp;основную ветку кода зефира.</p>
+<h1 id="Железо"><a href="#Железо" class="headerlink" title="Железо"></a>Железо</h1><p>В качестве тестового железа будет использована стандартная BLE400 с&nbsp;микроконтроллером nRF51822&nbsp;на&nbsp;борту. Для программирования возьму пожалуй JLink. Ну&nbsp;и&nbsp;для отладки пригодится логический анализатор.</p>
+<h1 id="Возможности-датчика"><a href="#Возможности-датчика" class="headerlink" title="Возможности датчика"></a>Возможности датчика</h1><p>Для создания полноценного драйвера нам необходимо вычленить из&nbsp;спецификации какие есть варианты и&nbsp;опции у&nbsp;нашего устройства, чтобы вынести их&nbsp;в&nbsp;опции драйвера. Так-же нужно определиться с&nbsp;протоколом обмена данными. В&nbsp;общем смотрим спецификацию.</p>
+<p>Итак существуют разные вариации этого датчика. Конкретный вариант задаётся маркировкой на&nbsp;корпусе. Типа <code>MLX90614ESF-BAA-000-TU</code>. Нас интересует первая буква после названия датчика&nbsp;&mdash; в&nbsp;данном случае <code>E</code>, а&nbsp;так-же две первые буквы трёхбуквенного кода в&nbsp;середине (BAA), т.&nbsp;к.&nbsp;они влияют на&nbsp;характеристики устройства (напряжение питания и&nbsp;количество термоэлементов). Видимо их&nbsp;придётся выносить в&nbsp;настройки. Но&nbsp;не&nbsp;факт&nbsp;&mdash; просто отложим это в&nbsp;памяти.</p>
+<p>Мой экземпляр кстати какой-то вообще никакой&nbsp;&mdash; маркировка совсем непонятная <code>B89736X16E</code>. Единственную информацию по&nbsp;ней нашёл на&nbsp;китайском форуме, да&nbsp;и&nbsp;то&nbsp;это обсуждение типа &laquo;кто-нибудь знает, что за&nbsp;маркировка?&raquo;. Пытался найти где я&nbsp;его купил, но&nbsp;тщетно&nbsp;&mdash; эта информация уже канула в&nbsp;лету. Но&nbsp;на&nbsp;нём есть буковка <code>B</code> из&nbsp;чего я&nbsp;могу сделать вывод, что это датчик с&nbsp;3-х вольтовым питанием. Хотя судя по&nbsp;спецификации и&nbsp;5&nbsp;вольт для него не&nbsp;являются смертельными. В&nbsp;итоге это предположение оказалось верным.</p>
+<p>Данные передаются либо через SMBus либо через&nbsp;PWM. Есть режим термо-реле, когда задаётся температурный диапазон, а&nbsp;датчик подаёт сигнал только когда температура выходит за&nbsp;заданные границы. Режим работы измерение/реле, а&nbsp;так-же режим передачи данных мы&nbsp;тоже вынесем в&nbsp;настройки драйвера.</p>
+<p>Ага! Читаем спецификацию далее и&nbsp;видим, что устройство управляется записью данных в&nbsp;EEPROM с&nbsp;помощью SMbus. Нам доступно 32 2-х байтных слова. Но&nbsp;большинство из&nbsp;них не&nbsp;используются. Так-же есть RAM с&nbsp;доступом только на&nbsp;чтение 32 17-ти битных слова.</p>
+<p>Ну что&nbsp;&mdash; будем разбираться. В&nbsp;общем SMBus у&nbsp;нас штука обязательная, а&nbsp;вот режим PWM&nbsp;&mdash; опциональный. Поддержка SMBus кстати урезанная&nbsp;&mdash; поддерживаются только 2&nbsp;команды&nbsp;&mdash; записать слово и&nbsp;прочитать слово. Частота работы шины от&nbsp;10&nbsp;до&nbsp;100&nbsp;кГц.</p>
+<p>Итак у&nbsp;нас вырисовываются следующие настройки:</p>
+<ul>
+<li>Режим работы SMBUS/PWM/RELAY</li>
+<li>Число сенсоров 1&nbsp;или 2</li>
+<li>Напряжение питания 5В или 3В (от этого зависят некоторые функции) </li>
+</ul>
+<p>Но в&nbsp;итоге забегая вперёд скажу, что пока для демонстрации решил ограничиться минимальным набором&nbsp;&mdash; считывание температуры через SMBus. Для демонстрации и&nbsp;для моих целей этого пока достаточно, а&nbsp;будет настроение добавить функционала никогда не&nbsp;поздно.</p>
+<h1 id="Каков-дальнейший-план"><a href="#Каков-дальнейший-план" class="headerlink" title="Каков дальнейший план?"></a>Каков дальнейший план?</h1><p>Очевидно, что работа датчика сильно завязана на&nbsp;SMBus. Но&nbsp;как мы&nbsp;знаем SMBus и&nbsp;I<sup>2</sup>C близнецы-браться, поэтому попытаемся использовать для коммуникации с&nbsp;датчиком возможности I<sup>2</sup>C, тем более, что контроллер, выбранный для разработки имеет аппаратную поддержку этого протокола.</p>
+<p>Ну и&nbsp;следующий шаг&nbsp;&mdash; сборка тестового макета, создание заготовки драйвера и&nbsp;написание тестового приложения для чтения и&nbsp;отображения температуры с&nbsp;датчика. В&nbsp;общем всё просто.</p>
+<h1 id="Собираем-стенд"><a href="#Собираем-стенд" class="headerlink" title="Собираем стенд"></a>Собираем стенд</h1><p>В общем для экспериментов выбрал плату BLE400, к&nbsp;которой подключил брэдборд с&nbsp;датчиком, ну&nbsp;и&nbsp;к&nbsp;ним подцепил JLink и&nbsp;анализатор SaleaLogic (он у&nbsp;меня без корпуса ибо китайский корпус развалился в&nbsp;первый&nbsp;же&nbsp;день&nbsp;&mdash; какой стыд). Ну&nbsp;и&nbsp;для экономии на&nbsp;проводах (чтоб не&nbsp;тянуть к&nbsp;ноутбуку этот клубок проводов)  всё это подключено через USB хаб специально купленными огрызками USB кабелей. Получилось как-то&nbsp;так:</p>
+<img src="/2018/04/24/writing-mlx90614-zephyr-rtos-driver/IMG_20180505_233744.jpg" class="" title="Рабочий макет для отладки датчика">
+
+<p>Распиновка датчика&nbsp;&mdash; в&nbsp;спецификации схема указана не&nbsp;совсем однозначно, поэтому приведу здесь более понятное фото:</p>
+<img src="/2018/04/24/writing-mlx90614-zephyr-rtos-driver/mlx-package.jpg" class="" title="Распиновка MLX90614">
+
+<p>Сам датчик тупо воткнул ногами в&nbsp;разъёмы соединительных проводов, предварительно напаяв на&nbsp;него более толстые ножки от&nbsp;гребёнок (он был раньше в&nbsp;плате, распаян через преобразователь уровня&nbsp;т.&nbsp;к.&nbsp;предыдущая поделка питалась от&nbsp;5В, а&nbsp;датчик 3-х вольтовый ну&nbsp;и&nbsp;соответственно ножки коротковаты).</p>
+<img src="/2018/04/24/writing-mlx90614-zephyr-rtos-driver/IMG_20180505_234253.jpg" class="" title="Подключение MLX90614">
+
+<h1 id="Итог"><a href="#Итог" class="headerlink" title="Итог"></a>Итог</h1><p>Пока решил эту статью закончить и&nbsp;перейти к&nbsp;программированию уже в&nbsp;следующей&nbsp;&mdash; как-то много набирается материала и&nbsp;не&nbsp;хочется всё пихать в&nbsp;одну кучу&nbsp;&mdash; и&nbsp;так статья получилась несколько сумбурной. В&nbsp;общем в&nbsp;итоге определился что делать и&nbsp;как, собрал всё железо&nbsp;&mdash; далее перейдём уже ближе к&nbsp;делу.</p>
+<h1 id="Источники"><a href="#Источники" class="headerlink" title="Источники"></a>Источники</h1><ul>
+<li><a target="_blank" rel="noopener" href="https://www.melexis.com/en/product/MLX90614/Digital-Plug-Play-Infrared-Thermometer-TO-Can">https://www.melexis.com/en/product/MLX90614/Digital-Plug-Play-Infrared-Thermometer-TO-Can</a></li>
+<li><a target="_blank" rel="noopener" href="https://geektimes.com/post/285226/">https://geektimes.com/post/285226/</a></li>
+</ul>
+  </div>
+
+  <footer>
+      <ul class="tags tags_post">
+      <li class="tags__label"><i class="icon-tags"></i></li>
+            <li class="tags__tag">
+          <span class="tag" itemprop="articleSection">
+            <a class="link link__control link_tag" tabindex="0" href="/tags/zephyr/">Zephyr RTOS</a>
+          </span>
+        </li>
+            <li class="tags__tag">
+          <span class="tag" itemprop="articleSection">
+            <a class="link link__control link_tag" tabindex="1" href="/tags/drivers/">Драйвера</a>
+          </span>
+        </li>
+            <li class="tags__tag">
+          <span class="tag" itemprop="articleSection">
+            <a class="link link__control link_tag" tabindex="2" href="/tags/MLX90614/">MLX90614</a>
+          </span>
+        </li>
+            <li class="tags__tag">
+          <span class="tag" itemprop="articleSection">
+            <a class="link link__control link_tag" tabindex="3" href="/tags/smbus/">SMBus</a>
+          </span>
+        </li>
+            <li class="tags__tag">
+          <span class="tag" itemprop="articleSection">
+            <a class="link link__control link_tag" tabindex="4" href="/tags/i2c/">I<sup>2</sup>C</a>
+          </span>
+        </li>
+            <li class="tags__tag">
+          <span class="tag" itemprop="articleSection">
+            <a class="link link__control link_tag" tabindex="5" href="/tags/PWM/">PWM</a>
+          </span>
+        </li>
+          </ul>
+  
+  
+    <ul class="categories categories_post">
+      <li class="categories__label"><i class="icon-folder-empty"></i></li>
+      
+        <li class="categories__category">
+          <span class="category" itemprop="articleSection">
+            <a class="link link__control link_category" tabindex="0" href="/categories/programming/">Программирование</a>
+          </span>
+        </li>
+      
+    </ul>
+  
+  <div class="share" style="margin: 1rem 0; display: flex; flex-direction: row; font-size: 90%">
+  <div class="share__label" style="margin-right: 0.5rem">Поделиться:</div>
+  <div class="share__body ya-share2" data-services="vkontakte,lj" data-size="s" data-description=""></div>
+</div>
+  </footer>
+</article>
+
+
+<section class="comments">
+  <h3 class="comments__title">Комментарии</h3>
+  <div id="disqus_thread">
+    <noscript>Please enable JavaScript to view the <a target="_blank" rel="noopener" href="//disqus.com/?ref_noscript">comments powered by Disqus.</a></noscript>
+  </div>
+</section>
+
+
+
+<footer class="copyright copyright--bottom">&copy; 2023 DiyTronic</footer>
+</main></div><script>var disqus_config = function() {
+  this.page.url = 'https://diytronic.ru/2018/04/24/writing-mlx90614-zephyr-rtos-driver/';
+  this.page.identifier = 'https://diytronic.ru/2018/04/24/writing-mlx90614-zephyr-rtos-driver/';
+};
+
+(function() {  // DON'T EDIT BELOW THIS LINE
+  var d = document, s = d.createElement('script');
+  s.src = 'https://diytronic.disqus.com/embed.js';
+  s.setAttribute('data-timestamp', +new Date());
+  (d.head || d.body).appendChild(s);
+})();</script><noscript> <p class="disqus__no-js">Please enable JavaScript to view the <a target="_blank" href="https://disqus.com/?ref_noscript" rel="nofollow noopener">comments powered by Disqus.</a></p></noscript><!-- Yandex.Metrika counter--><script>(function (d, w, c) {
+    (w[c] = w[c] || []).push(function() {
+        try {
+          w.yaCounter33124378 = new Ya.Metrika({
+            id: '33124378',
+            clickmap:true,
+            trackLinks:true,
+            accurateTrackBounce:true,
+            webvisor:true,
+            trackHash:true
+          });
+        } catch(e) { }
+    });
+
+    var n = d.getElementsByTagName("script")[0],
+        s = d.createElement("script"),
+        f = function () { n.parentNode.insertBefore(s, n); };
+    s.type = "text/javascript";
+    s.async = true;
+    s.src = "https://mc.yandex.ru/metrika/watch.js";
+
+    if (w.opera == "[object Opera]") {
+        d.addEventListener("DOMContentLoaded", f, false);
+    } else { f(); }
+})(document, window, "yandex.metrika_callbacks");</script><noscript><div><img src="https://mc.yandex.ru/watch/#{config.yandex.metrika}" style="position:absolute; left:-9999px;" alt=""></div></noscript><!-- /Yandex.Metrika counter--><script src="https://yastatic.net/share2/share.js" async="async"></script><script src="/js/app-8f31f535.js"></script></body></html>

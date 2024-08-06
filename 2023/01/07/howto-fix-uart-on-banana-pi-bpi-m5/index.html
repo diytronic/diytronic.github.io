@@ -1,0 +1,434 @@
+<!DOCTYPE html><html lang="ru" prefix="og: http://ogp.me/ns# ya: http://webmaster.yandex.ru/vocabularies/config article: http://ogp.me/ns/article#"><head><meta charset="utf-8"><meta name="author" content="Роман Татауров"><title>Как запустить UART на Banana Pi BPI-M5</title><meta name="description" content="Как запустить UART на Banana Pi BPI-M5"><meta name="keywords" content="Armbian,Banana PI,Amlogic S905X3,S905X3,UART,Devicetree,DTS"><meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1"><meta property="og:title" content=""><meta property="og:site_name" content="DiyTronic"><meta property="og:locale" content="ru_RU"><meta property="og:url" content="https://diytronic.ru/2023/01/07/howto-fix-uart-on-banana-pi-bpi-m5/"><meta property="og:type" content="article"><meta property="og:description"><meta property="article:tag" content="[&quot;Armbian&quot;,&quot;Banana PI&quot;,&quot;Amlogic S905X3&quot;,&quot;S905X3&quot;,&quot;UART&quot;,&quot;Devicetree&quot;,&quot;DTS&quot;]"><meta property="article:section" content="[&quot;Разное&quot;]"><meta property="article:published_time" content="2023-01-07T17:28:24.000Z"><meta property="article:modified_time" content="2023-01-07T17:28:24.000Z"><meta name="DC.Title" content="Как запустить UART на Banana Pi BPI-M5"><meta name="DC.Subject"><meta name="DC.Creator" content="Роман Татауров"><meta name="DC.Creator.Name" content="Роман Татауров"><meta name="DC.Date" scheme="WTN8601" content="2023-01-07T17:28:24.000Z"><meta name="DC.Type" content="Text"><meta name="DC.Language" content="ru-RU"><meta name="apple-mobile-web-app-title" content="WebHive"><meta name="application-name" content="WebHive"><meta name="msapplication-TileColor" content="#2b5797"><meta name="theme-color" content="#ffffff"><link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png"><link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png"><link rel="icon" type="image/png" sizes="192x192" href="/android-chrome-192x192.png"><link rel="icon" type="image/png" sizes="16x16" href="/favicon-16x16.png"><link rel="manifest" href="/site.webmanifest"><link rel="mask-icon" href="/safari-pinned-tab.svg" color="#5bbad5"><link type="text/css" rel="stylesheet" href="/css/app-66a13052.css"><link rel="alternate" href="/atom.xml" title="DiyTronic | Заметки об электронике, программировании, 3D-печати" type="application/atom+xml"><meta name="generator" content="Hexo 5.4.2"></head><body class="page" itemscope itemtype="http://schema.org/WebPage" itemid="https://diytronic.ru/2023/01/07/howto-fix-uart-on-banana-pi-bpi-m5/"><section class="header"> <div class="header__content"><div class="content-wrapper content-wrapper_header"><div class="title-box"><button class="button button_header button_left js-main-nav"><span class="icon"><svg width="24" height="24" viewBox="0 0 1000 1000"><path d="M108,206h784c54.1,0,98-43.9,98-98c0-54.1-43.9-98-98-98H108c-54.1,0-98,43.9-98,98C10,162.1,53.9,206,108,206z M892,402H108c-54.1,0-98,43.9-98,98c0,54.1,43.9,98,98,98h784c54.1,0,98-43.9,98-98C990,445.9,946.1,402,892,402z M892,794H108c-54.1,0-98,43.9-98,98c0,54.1,43.9,98,98,98h784c54.1,0,98-43.9,98-98C990,837.9,946.1,794,892,794z"></path></svg></span></button><a href="/"><img class="title-box__logo logo logo--main" src="/images/logo.png"/></a><h1 class="title-box__title"><a href="/">DiyTronic</a></h1><div class="title-box__description"><a href="/">Заметки об электронике, программировании, 3D-печати</a></div><button class="button button_header button_right js-search"><span class="icon"><svg width="24" height="24" viewBox="0 0 1000 1000"><path d="M688.5,424.6c0-72.6-25.8-134.8-77.4-186.4s-113.8-77.4-186.4-77.4s-134.8,25.8-186.4,77.4S160.8,352,160.8,424.6c0,72.6,25.8,134.8,77.4,186.4c51.6,51.6,113.8,77.4,186.4,77.4S559.4,662.6,611,611C662.6,559.4,688.5,497.3,688.5,424.6L688.5,424.6z M990,914.6c0,20.4-7.5,38.1-22.4,53c-14.9,14.9-32.6,22.4-53,22.4c-21.2,0-38.9-7.5-53-22.4l-202-201.4c-70.3,48.7-148.6,73-235,73c-56.1,0-109.8-10.9-161.1-32.7s-95.4-51.2-132.5-88.3c-37.1-37.1-66.5-81.3-88.3-132.5C20.9,534.5,10,480.8,10,424.6s10.9-109.8,32.7-161.1S93.9,168.1,131,131c37.1-37.1,81.3-66.6,132.5-88.3S368.5,10,424.6,10s109.8,10.9,161.1,32.7c51.2,21.8,95.4,51.2,132.5,88.3c37.1,37.1,66.6,81.3,88.3,132.5c21.8,51.2,32.7,104.9,32.7,161.1c0,86.4-24.3,164.7-73,235l202,202C982.7,876.1,990,893.8,990,914.6L990,914.6z"></path></svg></span></button></div><nav class="main-nav" itemscope itemtype="http://schema.org/SiteNavigationElement"><ul class="main-menu-bar"><li class="main-menu-bar__item"><a class="main-menu-bar__item-link" itemprop="url" href="/">Главная</a></li><li class="main-menu-bar__item"><a class="main-menu-bar__item-link" itemprop="url" href="/categories/uncategorized/">Разное</a></li><li class="main-menu-bar__item"><a class="main-menu-bar__item-link" itemprop="url" href="/categories/3d-print/">3D Печать</a></li><li class="main-menu-bar__item"><a class="main-menu-bar__item-link" itemprop="url" href="/categories/programming/">Программирование</a></li><li class="main-menu-bar__item"><a class="main-menu-bar__item-link" itemprop="url" href="/categories/electronics/">Электроника</a></li><li class="main-menu-bar__item"><a class="main-menu-bar__item-link" itemprop="url" href="/categories/repair/">Ремонт</a></li><li class="main-menu-bar__item"><a class="main-menu-bar__item-link js-#{i}" itemprop="url" href="/archives">Архив</a></li><li class="main-menu-bar__item"><a class="main-menu-bar__item-link js-#{i}" itemprop="url" href="/search">Поиск</a></li></ul></nav><script>var yandexSearchOptions = {
+  action: '/search/',
+  arrow: false,
+  bg: 'transparent',
+  fontsize: 16,
+  fg: '#FFF',
+  language: 'ru',
+  logo: 'rb',
+  publicname: 'Поиск по сайту www.diytronic.ru',
+  suggest: false,
+  target: '_self',
+  tld: 'ru',
+  type: 2,
+  searchid: 2298791,
+  webopt: false,
+  websearch: false,
+  input_fg: '#FFF',
+  input_bg: 'transparent',
+  input_fontStyle: 'normal',
+  input_fontWeight: 'normal',
+  input_placeholder: 'Поиск по сайту',
+  input_placeholderColor: '#FFF',
+  input_borderColor: 'transparent'
+}
+</script><div class="content-wrapper__search-box"><button class="button button_type_close button__control js-close-search"><span class="icon"><svg width="32" height="32" viewBox="0 0 348.333 348.334"><path d="M336.559,68.611L231.016,174.165l105.543,105.549c15.699,15.705,15.699,41.145,0,56.85   c-7.844,7.844-18.128,11.769-28.407,11.769c-10.296,0-20.581-3.919-28.419-11.769L174.167,231.003L68.609,336.563   c-7.843,7.844-18.128,11.769-28.416,11.769c-10.285,0-20.563-3.919-28.413-11.769c-15.699-15.698-15.699-41.139,0-56.85   l105.54-105.549L11.774,68.611c-15.699-15.699-15.699-41.145,0-56.844c15.696-15.687,41.127-15.687,56.829,0l105.563,105.554   L279.721,11.767c15.705-15.687,41.139-15.687,56.832,0C352.258,27.466,352.258,52.912,336.559,68.611z"></path></svg></span></button><div class="ya-site-form ya-site-form_inited_no" onclick="return yandexSearchOptions"><form class="search" action="https://yandex.ru/sitesearch" method="get" target="_self"><input type="hidden" name="searchid" value="2298791"/><input type="hidden" name="l10n" value="ru"/><input type="hidden" name="reqenc" value=""/><span class="input input_search"><span class="input__box"><input class="input__control" placeholder="Поиск" name="text"></span></span><button class="button button_type_submit button_search button__control" type="submit"><span class="icon"><svg width="24" height="24" viewBox="0 0 512 512"><path d="M445,386.7l-84.8-85.9c13.8-24.1,21-50.9,21-77.9c0-87.6-71.2-158.9-158.6-158.9C135.2,64,64,135.3,64,222.9c0,87.6,71.2,158.9,158.6,158.9c27.9,0,55.5-7.7,80.1-22.4l84.4,85.6c1.9,1.9,4.6,3.1,7.3,3.1c2.7,0,5.4-1.1,7.3-3.1l43.3-43.8C449,397.1,449,390.7,445,386.7z M222.6,125.9c53.4,0,96.8,43.5,96.8,97c0,53.5-43.4,97-96.8,97c-53.4,0-96.8-43.5-96.8-97C125.8,169.4,169.2,125.9,222.6,125.9z"></path></svg></span></button></form></div></div><footer class="copyright copyright--sidebar">&copy; 2023 DiyTronic</footer></div></div><div class="header__overlay"></div></section><div class="content-wrapper content-wrapper_main"><main class="content content_main" itemprop="mainEntityOfPage"> <article class="post post--full" itemscope itemtype="http://schema.org/Article" itemprop="mainEntityOfPage">
+  <header>
+    <h2 class="post__title" itemprop="headline">
+      <a class="link link__control link_post-title" href="/2023/01/07/howto-fix-uart-on-banana-pi-bpi-m5/">
+        Как запустить UART на Banana Pi BPI-M5
+      </a>
+    </h2>
+    <div class="post__meta">
+      <time class="post__date" datetime="2023-01-07T17:28:24.000Z" itemprop="datePublished">
+        7 января 2023
+      </time>
+      <span class="post__author" itemscope itemtype="http://schema.org/Person" itemprop="author"> Автор: <span itemprop="name">Роман Татауров</span></span>
+      <meta itemscope itescope itemType="https://schema.org/Person" itemprop="publisher" content="Роман Татауров" />
+      <a class="link link__control link_comments-count" href="https://diytronic.ru/2023/01/07/howto-fix-uart-on-banana-pi-bpi-m5/#disqus_thread"></a>
+    </div>
+  </header>
+
+  <div class="post__entry" itemprop="articleBody">
+    
+    <p>По ходу работы над очередной поделкой, для которой я&nbsp;воспользовался завалявшейся у&nbsp;меня платой Banana Pi&nbsp;BPI-M5, мне потребовалось подключить к&nbsp;ней внешнее устройство по&nbsp;UART. </p>
+<p>Вроде&nbsp;бы&nbsp;ничего хитрого, но&nbsp;неожиданно получил геморрой на&nbsp;ровном месте, в&nbsp;связи с&nbsp;чем пришлось углубиться в&nbsp;дебри маппинга пинов к&nbsp;устройствам чипа на&nbsp;плате. </p>
+<p>Собственно этой информацией я&nbsp;и&nbsp;хочу поделиться, так как такое может возникнуть в&nbsp;любой момент, а&nbsp;нормальной информации по&nbsp;теме не&nbsp;так много. Статья получилась довольно занудной и&nbsp;сумбурной. Но&nbsp;уж&nbsp;как умею.</p>
+<span id="more"></span>
+
+<p>Итак Banana Pi&nbsp;BPI-M5. Я&nbsp;в&nbsp;курсе, что это довольно ублюдская поделка с&nbsp;кривой поддержкой и&nbsp;косяками, но&nbsp;что есть то&nbsp;есть. </p>
+<p>На плату я&nbsp;решил накатить свой любимый Armbian, который тоже не&nbsp;отличается стабильностью, но&nbsp;для китайских плат нет ничего стабильного, а&nbsp;Raspberry PI&nbsp;я&nbsp;не&nbsp;хочу использовать в&nbsp;силу ряда причин.<br>Так что Armbian. Образ есть на&nbsp;сайте Armbian <a target="_blank" rel="noopener" href="https://www.armbian.com/bananapi-m5/">https://www.armbian.com/bananapi-m5/</a>. Каких-то затруднений с&nbsp;установкой не&nbsp;было. </p>
+<h1 id="Где-мой-UART"><a href="#Где-мой-UART" class="headerlink" title="Где мой UART?"></a>Где мой UART?</h1><p>На сайте с&nbsp;документацией есть <a target="_blank" rel="noopener" href="https://wiki.banana-pi.org/Banana_Pi_BPI-M5#BPI-M5_40PIN_GPIO_.28CON2.29">распиновка</a>, согласно которой у&nbsp;нас есть два UART-а.<br>Один отладочный для вывода сообщений при загрузке, а&nbsp;второй выведен на&nbsp;гребёнку GPIO пинов (UART_A)  и&nbsp;типа может быть настроен по&nbsp;своему усмотрению&nbsp;&mdash; он&nbsp;то&nbsp;мне и&nbsp;нужен.</p>
+<img src="/2023/01/07/howto-fix-uart-on-banana-pi-bpi-m5/uart-pins-on-board.png" class="" title="Board UART pins">
+
+<p>По умолчанию работает только отладочный UART и&nbsp;это нормально. Для подключения дополнительного оборудования у&nbsp;нас есть так называемые оверлеи, которые можно или прописать в&nbsp;файл <code>/boot/armbianEnv.txt </code> или воспользоваться программой <code>armbian-config</code>, в&nbsp;меню которой System -&gt; Hardware мы&nbsp;можем увидеть такую картину.</p>
+<img src="/2023/01/07/howto-fix-uart-on-banana-pi-bpi-m5/armbian-overlays-setup.png" class="" title="Select Armbian overlays">
+
+<p>Вроде всё нормально, правда гложут сомнения какого чорта тут делает <code>uartC</code>. И&nbsp;как оказалось сомнения были не&nbsp;напрасны&nbsp;&mdash; действительно ни&nbsp;хрена не&nbsp;работает даже с&nbsp;включёнными оверлеями. </p>
+<p>Поищем что-ли в&nbsp;логах загрузки.</p>
+<pre class="code language language-bash"><code class="language language-bash"><span class="token comment"># dmesg | grep uart</span>
+ff803000.serial: ttyAML0 at MMIO 0xff803000 <span class="token punctuation">(</span>irq <span class="token operator">=</span> <span class="token number">14</span>, base_baud <span class="token operator">=</span> <span class="token number">1500000</span><span class="token punctuation">)</span> is a meson_uart</code></pre>
+
+<p>Только одинокий <code>ttyAML0</code>. Это наш отладочный друг. Ни&nbsp;второго и&nbsp;ни&nbsp;уж&nbsp;тем более 3-го не&nbsp;видать. </p>
+<h1 id="Погружаемся-в-оверлеи"><a href="#Погружаемся-в-оверлеи" class="headerlink" title="Погружаемся в оверлеи"></a>Погружаемся в&nbsp;оверлеи</h1><p>На самом деле это просто devicetree файлы с&nbsp;настройками устройств, применяемыми при загрузке. Эта штука работает в&nbsp;каждом компьютере (в частности я&nbsp;патчил свой ноутбук таким образом для более корректной работы в&nbsp;Linux)  и&nbsp;кстати любимый мной ZephyrRTOS так-же использует эту систему.</p>
+<p>Но вернёмся к&nbsp;нашей ситуации. У&nbsp;нас эти оверлеи лежат&nbsp;тут:</p>
+<pre class="code language language-bash"><code class="language language-bash"><span class="token comment"># ls -la /boot/dtb/amlogic/overlay/</span>
+total <span class="token number">44</span>
+drwxr-xr-x <span class="token number">2</span> root root <span class="token number">4096</span> Jan  <span class="token number">7</span> <span class="token number">21</span>:27 <span class="token builtin class-name">.</span>
+drwxr-xr-x <span class="token number">3</span> root root <span class="token number">4096</span> Oct <span class="token number">20</span> <span class="token number">12</span>:00 <span class="token punctuation">..</span>
+-rwxr-xr-x <span class="token number">1</span> root root  <span class="token number">232</span> Oct <span class="token number">20</span> <span class="token number">12</span>:00 meson-fixup.scr
+-rwxr-xr-x <span class="token number">1</span> root root  <span class="token number">377</span> Oct <span class="token number">20</span> <span class="token number">12</span>:00 meson-g12-gxl-cma-pool-896MB.dtbo
+-rwxr-xr-x <span class="token number">1</span> root root  <span class="token number">343</span> Oct <span class="token number">20</span> <span class="token number">12</span>:00 meson-i2cA.dtbo
+-rwxr-xr-x <span class="token number">1</span> root root  <span class="token number">343</span> Oct <span class="token number">20</span> <span class="token number">12</span>:00 meson-i2cB.dtbo
+-rwxr-xr-x <span class="token number">1</span> root root  <span class="token number">238</span> Oct <span class="token number">20</span> <span class="token number">12</span>:00 meson-uartA.dtbo  <span class="token comment"># &lt;==== вот наш пациент</span>
+-rwxr-xr-x <span class="token number">1</span> root root  <span class="token number">238</span> Oct <span class="token number">20</span> <span class="token number">12</span>:00 meson-uartC.dtbo
+-rwxr-xr-x <span class="token number">1</span> root root  <span class="token number">759</span> Oct <span class="token number">20</span> <span class="token number">12</span>:00 meson-w1AB-gpio.dtbo
+-rwxr-xr-x <span class="token number">1</span> root root  <span class="token number">490</span> Oct <span class="token number">20</span> <span class="token number">12</span>:00 meson-w1-gpio.dtbo
+-rwxr-xr-x <span class="token number">1</span> root root  <span class="token number">339</span> Oct <span class="token number">20</span> <span class="token number">12</span>:00 README.meson-overlays</code></pre>
+
+<p>Но они в&nbsp;скомпилированом формате. Чтобы его декомпилировать воспользуемся командой <code>dtc</code></p>
+<pre class="code language language-c"><code class="language language-c"><span class="token macro property"># dtc -I dtb -O dts /boot/dtb/amlogic/overlay/meson-uartA.dtbo</span>
+<span class="token operator">/</span>dts<span class="token operator">-</span>v1<span class="token operator">/</span><span class="token punctuation">;</span>
+
+<span class="token operator">/</span> <span class="token punctuation">{</span>
+        compatible <span class="token operator">=</span> <span class="token string">"amlogic,meson-gxbb"</span><span class="token punctuation">;</span>
+
+        fragment@<span class="token number">0</span> <span class="token punctuation">{</span>
+                target<span class="token operator">-</span>path <span class="token operator">=</span> <span class="token string">"/soc/bus@c1100000/serial@84c0"</span><span class="token punctuation">;</span>
+
+                __overlay__ <span class="token punctuation">{</span>
+                        status <span class="token operator">=</span> <span class="token string">"okay"</span><span class="token punctuation">;</span>
+                <span class="token punctuation">}</span><span class="token punctuation">;</span>
+        <span class="token punctuation">}</span><span class="token punctuation">;</span>
+<span class="token punctuation">}</span><span class="token punctuation">;</span></code></pre>
+
+<p>Ну и&nbsp;для интереса глянем, что это за&nbsp;девайс такой. Для этого залезем в&nbsp;живой devicetree устройства, расположенный в&nbsp;файловой системе в&nbsp;папке<code>/sys/firmware/devicetree/base/</code></p>
+<pre class="code language language-bash"><code class="language language-bash"><span class="token comment"># ls -la /sys/firmware/devicetree/base/soc</span>
+<span class="token punctuation">..</span>.
+drwxr-xr-x <span class="token number">16</span> root root  <span class="token number">0</span> Jan  <span class="token number">6</span> <span class="token number">22</span>:17  bus@ff600000
+drwxr-xr-x <span class="token number">14</span> root root  <span class="token number">0</span> Jan  <span class="token number">6</span> <span class="token number">22</span>:17  bus@ff800000
+drwxr-xr-x <span class="token number">19</span> root root  <span class="token number">0</span> Jan  <span class="token number">6</span> <span class="token number">22</span>:17  bus@ffd00000
+<span class="token punctuation">..</span>.</code></pre>
+
+<p>Как видим никакого <code>bus@c1100000</code> у&nbsp;нас нет и&nbsp;в&nbsp;помине. В&nbsp;общем не&nbsp;буду томить&nbsp;&mdash; оверлеи в&nbsp;данной плате от&nbsp;<code>Odroid C4</code>. Видимо разрабы Armbian не&nbsp;стали заморачиваться и&nbsp;просто взяли оверлеи от&nbsp;похожего устройства на&nbsp;этом&nbsp;же&nbsp;чипе. Но&nbsp;не&nbsp;фортануло. </p>
+<p>Ну что&nbsp;&mdash; изучим что&nbsp;же&nbsp;есть у&nbsp;нас.</p>
+<pre class="code language language-bash"><code class="language language-bash"><span class="token comment"># ls -ls /sys/firmware/devicetree/base/soc/bus@ff800000/</span>
+<span class="token punctuation">..</span>.
+<span class="token number">0</span> drwxr-xr-x <span class="token number">2</span> root root  <span class="token number">0</span> Jan  <span class="token number">6</span> <span class="token number">22</span>:17  serial@3000
+<span class="token number">0</span> drwxr-xr-x <span class="token number">2</span> root root  <span class="token number">0</span> Jan  <span class="token number">6</span> <span class="token number">22</span>:17  serial@4000
+<span class="token punctuation">..</span>.</code></pre>
+
+<p>Уже что-то&nbsp;&mdash; есть два устройства с&nbsp;подозрительным именем <code>serial</code></p>
+<pre class="code language language-bash"><code class="language language-bash"><span class="token comment"># ls -ls /sys/firmware/devicetree/base/soc/bus@ffd00000</span>
+<span class="token punctuation">..</span>.
+<span class="token number">0</span> drwxr-xr-x <span class="token number">2</span> root root  <span class="token number">0</span> Jan  <span class="token number">6</span> <span class="token number">22</span>:17  serial@22000
+<span class="token number">0</span> drwxr-xr-x <span class="token number">2</span> root root  <span class="token number">0</span> Jan  <span class="token number">6</span> <span class="token number">22</span>:17  serial@23000
+<span class="token number">0</span> drwxr-xr-x <span class="token number">2</span> root root  <span class="token number">0</span> Jan  <span class="token number">6</span> <span class="token number">22</span>:17  serial@24000
+<span class="token punctuation">..</span>.</code></pre>
+
+<p>Ну и&nbsp;три штуки по&nbsp;этому адресу. </p>
+<p>В общем надо разобраться что тут&nbsp;что. </p>
+<h2 id="Документация-к-чипу"><a href="#Документация-к-чипу" class="headerlink" title="Документация к чипу"></a>Документация к&nbsp;чипу</h2><p>В нашем случае это <a target="_blank" rel="noopener" href="https://download.banana-pi.dev/d/3ebbfa04265d4dddb81b/files/?p=/Documents/BPI-M5/S905X3_Public_Datasheet_Hardkernel.pdf">Amlogic S905&times;3&nbsp;datasheet</a></p>
+<p>Ищем раздел <code>13.5 Universal Asynchronious Receiver And Transmitter</code> и&nbsp;оттуда мы&nbsp;узнаём, что у&nbsp;нас и&nbsp;правда 5&nbsp;UART-ов. </p>
+<p>Так-же оттуда мы&nbsp;узнаём, что 3&nbsp;обычных UART-а у&nbsp;нас расположены по&nbsp;базовому адресу <code>0xffd00000</code>.</p>
+<p>Кроме того у&nbsp;нас есть 2&nbsp;always on&nbsp;UART-а. Скажем прямо&nbsp;&mdash; негусто.</p>
+<h2 id="Исходники-Linux"><a href="#Исходники-Linux" class="headerlink" title="Исходники Linux"></a>Исходники Linux</h2><p>Далее я&nbsp;полез в&nbsp;исходники dts файлов для данной платы.</p>
+<p>Вот родной dts файл для Banana Pi&nbsp;BPI-M5 <a target="_blank" rel="noopener" href="https://github.com/torvalds/linux/blob/master/arch/arm64/boot/dts/amlogic/meson-sm1-bananapi-m5.dts">meson-sm1-bananapi-m5.dts</a></p>
+<pre class="code language language-c"><code class="language language-c">aliases <span class="token punctuation">{</span>
+  serial0 <span class="token operator">=</span> <span class="token operator">&amp;</span>uart_AO<span class="token punctuation">;</span>
+<span class="token punctuation">}</span><span class="token punctuation">;</span>
+
+<span class="token operator">&amp;</span>uart_AO <span class="token punctuation">{</span>
+	status <span class="token operator">=</span> <span class="token string">"okay"</span><span class="token punctuation">;</span> <span class="token comment">/* uart_AO включается */</span>
+<span class="token punctuation">}</span><span class="token punctuation">;</span></code></pre>
+
+<p>В котором у&nbsp;нас есть ссылка на&nbsp;некий <code>uart_AO</code>, который очень напоминает нам наш единственный доступный в&nbsp;системе дебаговый UART. То&nbsp;есть dts для Banana Pi&nbsp;BPI-M5&nbsp;просто включает <code>uart_AO</code>. Осталось найти где этот <code>uart_AO</code> описан, т.&nbsp;к.&nbsp;здесь просто ссылка на&nbsp;него.</p>
+<p>Ну и&nbsp;у&nbsp;нас нет остальных UART-ов, поэтому открываем по&nbsp;очереди файлы из&nbsp;include и&nbsp;в&nbsp;конце концов натыкаемся на&nbsp;россыпь UART-ов в&nbsp;файле <a target="_blank" rel="noopener" href="https://github.com/torvalds/linux/blob/master/arch/arm64/boot/dts/amlogic/meson-g12-common.dtsi">meson-g12-common.dtsi</a>. </p>
+<pre class="code language language-c"><code class="language language-c">aobus<span class="token operator">:</span> bus@ff800000 <span class="token punctuation">{</span>          
+    uart_AO<span class="token operator">:</span> serial@<span class="token number">3000</span> <span class="token punctuation">{</span> <span class="token comment">/* &lt;=== этот адрес мы видели в логе загрузки */</span>
+      <span class="token punctuation">.</span><span class="token punctuation">.</span><span class="token punctuation">.</span>
+      status <span class="token operator">=</span> <span class="token string">"disabled"</span><span class="token punctuation">;</span>
+    <span class="token punctuation">}</span><span class="token punctuation">;</span>
+
+    uart_AO_B<span class="token operator">:</span> serial@<span class="token number">4000</span> <span class="token punctuation">{</span>
+      <span class="token punctuation">.</span><span class="token punctuation">.</span><span class="token punctuation">.</span>
+      status <span class="token operator">=</span> <span class="token string">"disabled"</span><span class="token punctuation">;</span>
+    <span class="token punctuation">}</span><span class="token punctuation">;</span>
+<span class="token punctuation">}</span>
+
+cbus<span class="token operator">:</span> bus@ffd00000 <span class="token punctuation">{</span>
+    uart_C<span class="token operator">:</span> serial@<span class="token number">22000</span> <span class="token punctuation">{</span>
+      <span class="token punctuation">.</span><span class="token punctuation">.</span><span class="token punctuation">.</span>
+      status <span class="token operator">=</span> <span class="token string">"disabled"</span><span class="token punctuation">;</span>
+    <span class="token punctuation">}</span><span class="token punctuation">;</span>
+
+    uart_B<span class="token operator">:</span> serial@<span class="token number">23000</span> <span class="token punctuation">{</span>
+      <span class="token punctuation">.</span><span class="token punctuation">.</span><span class="token punctuation">.</span>
+      status <span class="token operator">=</span> <span class="token string">"disabled"</span><span class="token punctuation">;</span>
+    <span class="token punctuation">}</span><span class="token punctuation">;</span>
+
+    uart_A<span class="token operator">:</span> serial@<span class="token number">24000</span> <span class="token punctuation">{</span>
+      <span class="token punctuation">.</span><span class="token punctuation">.</span><span class="token punctuation">.</span>
+      fifo<span class="token operator">-</span>size <span class="token operator">=</span> <span class="token operator">&lt;</span><span class="token number">128</span><span class="token operator">></span><span class="token punctuation">;</span> <span class="token comment">/* в доке к чипу упоминалось что UART_A имеет буффер в 128k */</span>
+      status <span class="token operator">=</span> <span class="token string">"disabled"</span><span class="token punctuation">;</span>
+    <span class="token punctuation">}</span><span class="token punctuation">;</span>
+<span class="token punctuation">}</span></code></pre>
+
+<p>Видим, что количество UART-ов и&nbsp;адреса шин подозрительно совпадают с&nbsp;тем, что мы&nbsp;обнаружили изучая devicetree работающего устройства. </p>
+<p>Так&nbsp;же&nbsp;видим, что все устройства в&nbsp;состоянии disabled. Включен (см. выше про <a target="_blank" rel="noopener" href="https://github.com/torvalds/linux/blob/master/arch/arm64/boot/dts/amlogic/meson-sm1-bananapi-m5.dts">meson-sm1-bananapi-m5.dts</a>)  только <code>uart_AO</code> который имеет адрес <code>aobus: bus@ff800000 serial@3000</code>, то&nbsp;есть то&nbsp;самое <code>MMIO 0xff803000</code> из&nbsp;лога загрузки. Короче это точно наш дебаговый UART.</p>
+<p>Надо попробовать включить <code>uart_A</code>. Для этого сохраняем декомпилированный оверлей в&nbsp;файл с&nbsp;расширением dts и&nbsp;меняем там адрес UART-а на&nbsp;обнаруженный нами, то&nbsp;есть получим что-то вот такое</p>
+<pre class="code language language-bash"><code class="language language-bash"><span class="token comment"># dtc -I dtb -O dts -f /boot/dtb/amlogic/overlay/meson-uartA.dtbo -o /root/meson-uartA.dts</span></code></pre>
+
+<p>Далее редактируем meson-uartA.dts</p>
+<pre class="code language language-c"><code class="language language-c"><span class="token operator">/</span>dts<span class="token operator">-</span>v1<span class="token operator">/</span><span class="token punctuation">;</span>
+<span class="token operator">/</span>plugin<span class="token operator">/</span><span class="token punctuation">;</span>  <span class="token comment">/* &lt;=== это надо добавить т.к. у нас оверлей */</span>
+
+<span class="token operator">/</span> <span class="token punctuation">{</span>
+        compatible <span class="token operator">=</span> <span class="token string">"amlogic,meson-gxbb"</span><span class="token punctuation">;</span>
+
+        fragment@<span class="token number">0</span> <span class="token punctuation">{</span>
+                target<span class="token operator">-</span>path <span class="token operator">=</span> <span class="token string">"/soc/bus@ffd00000/serial@24000"</span><span class="token punctuation">;</span>  <span class="token comment">/* &lt;=== меняем адрес */</span>
+
+                __overlay__ <span class="token punctuation">{</span>
+                        status <span class="token operator">=</span> <span class="token string">"okay"</span><span class="token punctuation">;</span>
+                <span class="token punctuation">}</span><span class="token punctuation">;</span>
+        <span class="token punctuation">}</span><span class="token punctuation">;</span>
+<span class="token punctuation">}</span><span class="token punctuation">;</span></code></pre>
+
+<p>И устанавливаем, предварительно удалив старые uart оверлеи.</p>
+<pre class="code language language-bash"><code class="language language-bash"><span class="token comment"># armbian-add-overlay meson-uartA.dts</span>
+Compiling the overlay
+Copying the compiled overlay <span class="token function">file</span> to /boot/overlay-user/
+Reboot is required to apply the changes</code></pre>
+
+<p>Как вариант с&nbsp;помощью dtc можно скомпилировать и&nbsp;подменить файлы вручную, но&nbsp;так проще. </p>
+<p>После перезагрузки видим 2&nbsp;устройства. Работает!</p>
+<pre class="code language language-bash"><code class="language language-bash">% <span class="token function">sudo</span> <span class="token function">dmesg</span> <span class="token operator">|</span> <span class="token function">grep</span> _uart
+ff803000.serial: ttyAML0 at MMIO 0xff803000 <span class="token punctuation">(</span>irq <span class="token operator">=</span> <span class="token number">14</span>, base_baud <span class="token operator">=</span> <span class="token number">1500000</span><span class="token punctuation">)</span> is a meson_uart
+ffd24000.serial: ttyAML1 at MMIO 0xffd24000 <span class="token punctuation">(</span>irq <span class="token operator">=</span> <span class="token number">15</span>, base_baud <span class="token operator">=</span> <span class="token number">1500000</span><span class="token punctuation">)</span> is a meson_uart</code></pre>
+
+<p>Но радость была недолгой. При подключении к&nbsp;порту реального устройства оказалось, что обмен идёт только в&nbsp;одну сторону. Короче RX&nbsp;работает, а&nbsp;TX&nbsp;&mdash;&nbsp;нет.</p>
+<h1 id="Разборки-с-пинами"><a href="#Разборки-с-пинами" class="headerlink" title="Разборки с пинами"></a>Разборки с&nbsp;пинами</h1><p>Очевидно, что какая-то проблема с&nbsp;настройкой пинов. Подключаемая железка гарантировано работала. На&nbsp;пины я&nbsp;убил 3&nbsp;вечера. </p>
+<p>Проверим, что у&nbsp;нас с&nbsp;пинами. По&nbsp;счастью эта информация есть в&nbsp;нашем текущем devicetree</p>
+<p>Итак начнём. Поищем какие пины и&nbsp;как назначены нашим устройствам. Конкретно нас интересует UART_A, который как мы&nbsp;выяснили имеет адрес ffd24000.</p>
+<pre class="code language language-bash"><code class="language language-bash"><span class="token comment"># cat /sys/kernel/debug/pinctrl/pinctrl-maps | grep ffd24000 -A 8</span>
+device ffd24000.serial
+state default
+<span class="token builtin class-name">type</span> MUX_GROUP <span class="token punctuation">(</span><span class="token number">2</span><span class="token punctuation">)</span>
+controlling device ff634400.bus:pinctrl@40  <span class="token comment"># &lt;== вот это нам и надо</span>
+group uart_a_tx                             <span class="token comment"># &lt;== и вот это</span>
+<span class="token keyword">function</span> uart_a
+
+device ffd24000.serial
+state default
+<span class="token builtin class-name">type</span> CONFIGS_GROUP <span class="token punctuation">(</span><span class="token number">4</span><span class="token punctuation">)</span>
+controlling device ff634400.bus:pinctrl@40
+group uart_a_tx
+config 00000001
+
+device ffd24000.serial
+state default
+<span class="token builtin class-name">type</span> MUX_GROUP <span class="token punctuation">(</span><span class="token number">2</span><span class="token punctuation">)</span>
+controlling device ff634400.bus:pinctrl@40
+group uart_a_rx
+<span class="token keyword">function</span> uart_a
+
+device ffd24000.serial
+state default
+<span class="token builtin class-name">type</span> CONFIGS_GROUP <span class="token punctuation">(</span><span class="token number">4</span><span class="token punctuation">)</span>
+controlling device ff634400.bus:pinctrl@40
+group uart_a_rx
+config 00000001
+
+device ffd24000.serial
+state default
+<span class="token builtin class-name">type</span> MUX_GROUP <span class="token punctuation">(</span><span class="token number">2</span><span class="token punctuation">)</span>
+controlling device ff634400.bus:pinctrl@40
+group uart_a_tx
+<span class="token keyword">function</span> uart_a
+
+device ffd24000.serial
+state default
+<span class="token builtin class-name">type</span> CONFIGS_GROUP <span class="token punctuation">(</span><span class="token number">4</span><span class="token punctuation">)</span>
+controlling device ff634400.bus:pinctrl@40
+group uart_a_tx
+config 000fa00a
+config 0000000c
+config 00000112</code></pre>
+
+<p>Теперь мы&nbsp;знаем адрес устройства на&nbsp;шине, которое заведует нужными нам пинами и&nbsp;конкретные группы пинов. Теперь лезем обратно в&nbsp;dts <a target="_blank" rel="noopener" href="https://github.com/torvalds/linux/blob/master/arch/arm64/boot/dts/amlogic/meson-g12-common.dtsi">meson-g12-common.dtsi</a> и&nbsp;ищем это устройство.</p>
+<pre class="code language language-bash"><code class="language language-bash">soc <span class="token punctuation">{</span>
+	apb: bus@ff600000 <span class="token punctuation">{</span>    /* <span class="token operator">&lt;</span><span class="token operator">==</span><span class="token operator">=</span> вот адрес шины */
+    <span class="token punctuation">..</span>.
+	periphs: bus@34400 <span class="token punctuation">{</span> /* <span class="token operator">&lt;</span><span class="token operator">==</span><span class="token operator">=</span> вот адрес внутри шины */
+      <span class="token punctuation">..</span>.
+		periphs_pinctrl: pinctrl@40 <span class="token punctuation">{</span> /* <span class="token operator">&lt;</span><span class="token operator">==</span><span class="token operator">=</span> устройство */
+        <span class="token punctuation">..</span>.
+			uart_a_pins: uart-a <span class="token punctuation">{</span>
+				mux <span class="token punctuation">{</span>
+					<span class="token function">groups</span> <span class="token operator">=</span> <span class="token string">"uart_a_tx"</span>, <span class="token string">"uart_a_rx"</span><span class="token punctuation">;</span> /* <span class="token operator">&lt;</span><span class="token operator">==</span><span class="token operator">==</span> пины */
+					<span class="token keyword">function</span> <span class="token operator">=</span> <span class="token string">"uart_a"</span><span class="token punctuation">;</span>
+					bias-disable<span class="token punctuation">;</span>
+				<span class="token punctuation">}</span><span class="token punctuation">;</span>
+			<span class="token punctuation">}</span><span class="token punctuation">;</span></code></pre>
+
+<p>И что&nbsp;же&nbsp;мы&nbsp;тут видим? А&nbsp;видим&nbsp;мы, что и&nbsp;TX&nbsp;и&nbsp;RX&nbsp;объединены в&nbsp;одну группу и&nbsp;имеют общие настройки, что довольно странно.</p>
+<p>Поищем ещё поглубже</p>
+<pre class="code language language-bash"><code class="language language-bash"><span class="token comment"># ls -la /sys/kernel/debug/pinctrl</span>
+total <span class="token number">0</span>
+drwxr-xr-x  <span class="token number">2</span> ff634400.bus:pinctrl@40-pinctrl-meson  <span class="token comment"># &lt;== вот эта папка что-то напоминает</span>
+drwxr-xr-x  <span class="token number">2</span> ff800000.sys-ctrl:pinctrl@14-pinctrl-meson
+-r--r--r--  <span class="token number">1</span> pinctrl-devices
+-r--r--r--  <span class="token number">1</span> pinctrl-handles
+-r--r--r--  <span class="token number">1</span> pinctrl-maps  <span class="token comment"># &lt;== это мы только что смотрели</span></code></pre>
+
+<p>Нас интересует файл pinconf-pins</p>
+<pre class="code language language-bash"><code class="language language-bash"><span class="token comment"># cat /sys/kernel/debug/pinctrl/ff634400.bus:pinctrl@40-pinctrl-meson/pinconf-pins | grep GPIOX_1</span>
+<span class="token punctuation">..</span>.
+pin <span class="token number">77</span> <span class="token punctuation">(</span>GPIOX_12<span class="token punctuation">)</span>: input bias disabled, output drive strength <span class="token punctuation">(</span><span class="token number">2500</span> uA<span class="token punctuation">)</span>
+pin <span class="token number">78</span> <span class="token punctuation">(</span>GPIOX_13<span class="token punctuation">)</span>: input bias disabled, output drive strength <span class="token punctuation">(</span><span class="token number">2500</span> uA<span class="token punctuation">)</span>
+<span class="token punctuation">..</span>.</code></pre>
+
+<p>GPIOX_12 и&nbsp;GPIOX_13&nbsp;упоминаются в&nbsp;распиновке по&nbsp;ссылке выше как соответственно UART_A_TX и&nbsp;UART_A_RX.</p>
+<p>Вроде и&nbsp;всё&nbsp;бы&nbsp;ничего, но&nbsp;некоторые другие пины имеют среди прочего <code>output enabled</code>. Видимо стоит это как-то указать. Ну&nbsp;и&nbsp;забегая вперёд кроме добавления TX&nbsp;пину возможности работать на&nbsp;вывод, нужно ещё убрать ему возможность работать на&nbsp;вход. Оба условия оказались необходимы, иначе ничего не&nbsp;работало.</p>
+<p>Полный набор возможных опций для пинов можно посмотреть тут <a target="_blank" rel="noopener" href="https://github.com/torvalds/linux/blob/master/drivers/pinctrl/pinconf-generic.c#L160">pinconf-generic.c</a></p>
+<p>В итоге наш финальный оверлей принял следующий&nbsp;вид. </p>
+<pre class="code language language-c"><code class="language language-c"><span class="token operator">/</span>dts<span class="token operator">-</span>v1<span class="token operator">/</span><span class="token punctuation">;</span>
+<span class="token operator">/</span>plugin<span class="token operator">/</span><span class="token punctuation">;</span>
+
+<span class="token operator">/</span> <span class="token punctuation">{</span>
+    compatible <span class="token operator">=</span> <span class="token string">"amlogic,meson-gxbb"</span><span class="token punctuation">;</span>
+
+    fragment@<span class="token number">0</span> <span class="token punctuation">{</span>
+        target<span class="token operator">-</span>path <span class="token operator">=</span> <span class="token string">"/soc/bus@ff600000/bus@34400/pinctrl@40"</span><span class="token punctuation">;</span> <span class="token comment">/* для данного устройства */</span>
+
+        __overlay__ <span class="token punctuation">{</span>
+            uart_a_tx_pin<span class="token operator">:</span> uart<span class="token operator">-</span>a<span class="token operator">-</span>tx <span class="token punctuation">{</span> <span class="token comment">/* добавляем настройки пинов */</span>
+                mux <span class="token punctuation">{</span>
+                    groups <span class="token operator">=</span> <span class="token string">"uart_a_tx"</span><span class="token punctuation">;</span> <span class="token comment">/* для группы пинов "uart_a_tx"
+                    function = "uart_a";  /* это как было в оригинальной группе */</span>
+                    input<span class="token operator">-</span>disable<span class="token punctuation">;</span>        <span class="token comment">/* для TX выключаем input - обязательно! */</span>
+                    output<span class="token operator">-</span>enable<span class="token punctuation">;</span>        <span class="token comment">/* для TX включаем output - обязательно! */</span>
+                    drive<span class="token operator">-</span>strength<span class="token operator">-</span>microamp <span class="token operator">=</span> <span class="token operator">&lt;</span><span class="token number">4000</span><span class="token operator">></span><span class="token punctuation">;</span> <span class="token comment">/* это наверно необязательно */</span>
+                <span class="token punctuation">}</span><span class="token punctuation">;</span>
+            <span class="token punctuation">}</span><span class="token punctuation">;</span>
+        <span class="token punctuation">}</span><span class="token punctuation">;</span>
+    <span class="token punctuation">}</span><span class="token punctuation">;</span>
+
+    fragment@<span class="token number">1</span> <span class="token punctuation">{</span>
+        target<span class="token operator">-</span>path <span class="token operator">=</span> <span class="token string">"/soc/bus@ffd00000/serial@24000"</span><span class="token punctuation">;</span>  <span class="token comment">/* &lt;=== меняем адрес (см. выше) */</span>
+
+        __overlay__ <span class="token punctuation">{</span>
+            status <span class="token operator">=</span> <span class="token string">"okay"</span><span class="token punctuation">;</span>                             <span class="token comment">/* включаем UART */</span>
+            pinctrl<span class="token operator">-</span><span class="token number">0</span> <span class="token operator">=</span> <span class="token operator">&lt;</span><span class="token operator">&amp;</span>uart_a_pins <span class="token operator">&amp;</span>uart_a_tx_pin<span class="token operator">></span><span class="token punctuation">;</span>   <span class="token comment">/* добавляем uart_a_tx_pin из блока выше */</span>
+            pinctrl<span class="token operator">-</span>names <span class="token operator">=</span> <span class="token string">"default"</span><span class="token punctuation">;</span>                   <span class="token comment">/* это возможно необязательно */</span>
+        <span class="token punctuation">}</span><span class="token punctuation">;</span>
+    <span class="token punctuation">}</span><span class="token punctuation">;</span>
+<span class="token punctuation">}</span><span class="token punctuation">;</span></code></pre>
+
+<p>Устанавливаем этот оверлей и&nbsp;после перезагрузки получаем полноценно работающий UART_A согласно официальной распиновке.</p>
+<p>Настройки пинов при этом приняли следующий&nbsp;вид. Видим, что у&nbsp;TX&nbsp;(GPIOX_12)  появился <code>output-enabled</code></p>
+<pre class="code language language-bash"><code class="language language-bash"><span class="token comment"># cat /sys/kernel/debug/pinctrl/ff634400.bus:pinctrl@40-pinctrl-meson/pinconf-pins | grep GPIOX_1</span>
+<span class="token punctuation">..</span>.
+pin <span class="token number">77</span> <span class="token punctuation">(</span>GPIOX_12<span class="token punctuation">)</span>: input bias disabled, output drive strength <span class="token punctuation">(</span><span class="token number">4000</span> uA<span class="token punctuation">)</span>, output enabled, pin output <span class="token punctuation">(</span><span class="token number">1</span> level<span class="token punctuation">)</span>
+pin <span class="token number">78</span> <span class="token punctuation">(</span>GPIOX_13<span class="token punctuation">)</span>: input bias disabled, output drive strength <span class="token punctuation">(</span><span class="token number">2500</span> uA<span class="token punctuation">)</span>
+<span class="token punctuation">..</span>.</code></pre>
+
+<h1 id="Итого"><a href="#Итого" class="headerlink" title="Итого"></a>Итого</h1><p>После всех злоключений удалось таки запустить этот чортов UART и&nbsp;успешно подключить к&nbsp;нему железяку. Я&nbsp;счастлив, особенно учитывая количество убитого времени. Надеюсь кому-нибудь будет полезно.</p>
+  </div>
+
+  <footer>
+      <ul class="tags tags_post">
+      <li class="tags__label"><i class="icon-tags"></i></li>
+            <li class="tags__tag">
+          <span class="tag" itemprop="articleSection">
+            <a class="link link__control link_tag" tabindex="0" href="/tags/Armbian/">Armbian</a>
+          </span>
+        </li>
+            <li class="tags__tag">
+          <span class="tag" itemprop="articleSection">
+            <a class="link link__control link_tag" tabindex="1" href="/tags/Banana-PI/">Banana PI</a>
+          </span>
+        </li>
+            <li class="tags__tag">
+          <span class="tag" itemprop="articleSection">
+            <a class="link link__control link_tag" tabindex="2" href="/tags/Amlogic-S905X3/">Amlogic S905X3</a>
+          </span>
+        </li>
+            <li class="tags__tag">
+          <span class="tag" itemprop="articleSection">
+            <a class="link link__control link_tag" tabindex="3" href="/tags/S905X3/">S905X3</a>
+          </span>
+        </li>
+            <li class="tags__tag">
+          <span class="tag" itemprop="articleSection">
+            <a class="link link__control link_tag" tabindex="4" href="/tags/UART/">UART</a>
+          </span>
+        </li>
+            <li class="tags__tag">
+          <span class="tag" itemprop="articleSection">
+            <a class="link link__control link_tag" tabindex="5" href="/tags/Devicetree/">Devicetree</a>
+          </span>
+        </li>
+            <li class="tags__tag">
+          <span class="tag" itemprop="articleSection">
+            <a class="link link__control link_tag" tabindex="6" href="/tags/DTS/">DTS</a>
+          </span>
+        </li>
+          </ul>
+  
+  
+    <ul class="categories categories_post">
+      <li class="categories__label"><i class="icon-folder-empty"></i></li>
+      
+        <li class="categories__category">
+          <span class="category" itemprop="articleSection">
+            <a class="link link__control link_category" tabindex="0" href="/categories/uncategorized/">Разное</a>
+          </span>
+        </li>
+      
+    </ul>
+  
+  <div class="share" style="margin: 1rem 0; display: flex; flex-direction: row; font-size: 90%">
+  <div class="share__label" style="margin-right: 0.5rem">Поделиться:</div>
+  <div class="share__body ya-share2" data-services="vkontakte,lj" data-size="s" data-description="Как запустить UART на Banana Pi BPI-M5"></div>
+</div>
+  </footer>
+</article>
+
+
+<section class="comments">
+  <h3 class="comments__title">Комментарии</h3>
+  <div id="disqus_thread">
+    <noscript>Please enable JavaScript to view the <a target="_blank" rel="noopener" href="//disqus.com/?ref_noscript">comments powered by Disqus.</a></noscript>
+  </div>
+</section>
+
+
+
+<footer class="copyright copyright--bottom">&copy; 2023 DiyTronic</footer>
+</main></div><script>var disqus_config = function() {
+  this.page.url = 'https://diytronic.ru/2023/01/07/howto-fix-uart-on-banana-pi-bpi-m5/';
+  this.page.identifier = 'https://diytronic.ru/2023/01/07/howto-fix-uart-on-banana-pi-bpi-m5/';
+};
+
+(function() {  // DON'T EDIT BELOW THIS LINE
+  var d = document, s = d.createElement('script');
+  s.src = 'https://diytronic.disqus.com/embed.js';
+  s.setAttribute('data-timestamp', +new Date());
+  (d.head || d.body).appendChild(s);
+})();</script><noscript> <p class="disqus__no-js">Please enable JavaScript to view the <a target="_blank" href="https://disqus.com/?ref_noscript" rel="nofollow noopener">comments powered by Disqus.</a></p></noscript><!-- Yandex.Metrika counter--><script>(function (d, w, c) {
+    (w[c] = w[c] || []).push(function() {
+        try {
+          w.yaCounter33124378 = new Ya.Metrika({
+            id: '33124378',
+            clickmap:true,
+            trackLinks:true,
+            accurateTrackBounce:true,
+            webvisor:true,
+            trackHash:true
+          });
+        } catch(e) { }
+    });
+
+    var n = d.getElementsByTagName("script")[0],
+        s = d.createElement("script"),
+        f = function () { n.parentNode.insertBefore(s, n); };
+    s.type = "text/javascript";
+    s.async = true;
+    s.src = "https://mc.yandex.ru/metrika/watch.js";
+
+    if (w.opera == "[object Opera]") {
+        d.addEventListener("DOMContentLoaded", f, false);
+    } else { f(); }
+})(document, window, "yandex.metrika_callbacks");</script><noscript><div><img src="https://mc.yandex.ru/watch/#{config.yandex.metrika}" style="position:absolute; left:-9999px;" alt=""></div></noscript><!-- /Yandex.Metrika counter--><script src="https://yastatic.net/share2/share.js" async="async"></script><script src="/js/app-8f31f535.js"></script></body></html>

@@ -1,0 +1,152 @@
+<!DOCTYPE html><html lang="ru" prefix="og: http://ogp.me/ns# ya: http://webmaster.yandex.ru/vocabularies/config article: http://ogp.me/ns/article#"><head><meta charset="utf-8"><meta name="author" content="Роман Татауров"><title>Апгрейд китайского БП с 5 до 12 вольт</title><meta name="description" content="Как повысить напряжение старого 5-вольтового блока питания до 12 вольт."><meta name="keywords" content="Блок Питания,howto"><meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1"><meta property="og:title" content=""><meta property="og:site_name" content="DiyTronic"><meta property="og:locale" content="ru_RU"><meta property="og:url" content="https://diytronic.ru/2018/04/07/upgrade-5v-power-supply-to-12v/"><meta property="og:type" content="article"><meta property="og:description"><meta property="article:tag" content="[&quot;Блок Питания&quot;,&quot;howto&quot;]"><meta property="article:section" content="[&quot;Электроника&quot;]"><meta property="article:published_time" content="2018-04-07T14:47:47.000Z"><meta property="article:modified_time" content="2018-04-07T14:47:47.000Z"><meta name="DC.Title" content="Апгрейд китайского БП с 5 до 12 вольт"><meta name="DC.Subject"><meta name="DC.Creator" content="Роман Татауров"><meta name="DC.Creator.Name" content="Роман Татауров"><meta name="DC.Date" scheme="WTN8601" content="2018-04-07T14:47:47.000Z"><meta name="DC.Type" content="Text"><meta name="DC.Language" content="ru-RU"><meta name="apple-mobile-web-app-title" content="WebHive"><meta name="application-name" content="WebHive"><meta name="msapplication-TileColor" content="#2b5797"><meta name="theme-color" content="#ffffff"><link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png"><link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png"><link rel="icon" type="image/png" sizes="192x192" href="/android-chrome-192x192.png"><link rel="icon" type="image/png" sizes="16x16" href="/favicon-16x16.png"><link rel="manifest" href="/site.webmanifest"><link rel="mask-icon" href="/safari-pinned-tab.svg" color="#5bbad5"><link type="text/css" rel="stylesheet" href="/css/app-66a13052.css"><link rel="alternate" href="/atom.xml" title="DiyTronic | Заметки об электронике, программировании, 3D-печати" type="application/atom+xml"><meta name="generator" content="Hexo 5.4.2"></head><body class="page" itemscope itemtype="http://schema.org/WebPage" itemid="https://diytronic.ru/2018/04/07/upgrade-5v-power-supply-to-12v/"><section class="header"> <div class="header__content"><div class="content-wrapper content-wrapper_header"><div class="title-box"><button class="button button_header button_left js-main-nav"><span class="icon"><svg width="24" height="24" viewBox="0 0 1000 1000"><path d="M108,206h784c54.1,0,98-43.9,98-98c0-54.1-43.9-98-98-98H108c-54.1,0-98,43.9-98,98C10,162.1,53.9,206,108,206z M892,402H108c-54.1,0-98,43.9-98,98c0,54.1,43.9,98,98,98h784c54.1,0,98-43.9,98-98C990,445.9,946.1,402,892,402z M892,794H108c-54.1,0-98,43.9-98,98c0,54.1,43.9,98,98,98h784c54.1,0,98-43.9,98-98C990,837.9,946.1,794,892,794z"></path></svg></span></button><a href="/"><img class="title-box__logo logo logo--main" src="/images/logo.png"/></a><h1 class="title-box__title"><a href="/">DiyTronic</a></h1><div class="title-box__description"><a href="/">Заметки об электронике, программировании, 3D-печати</a></div><button class="button button_header button_right js-search"><span class="icon"><svg width="24" height="24" viewBox="0 0 1000 1000"><path d="M688.5,424.6c0-72.6-25.8-134.8-77.4-186.4s-113.8-77.4-186.4-77.4s-134.8,25.8-186.4,77.4S160.8,352,160.8,424.6c0,72.6,25.8,134.8,77.4,186.4c51.6,51.6,113.8,77.4,186.4,77.4S559.4,662.6,611,611C662.6,559.4,688.5,497.3,688.5,424.6L688.5,424.6z M990,914.6c0,20.4-7.5,38.1-22.4,53c-14.9,14.9-32.6,22.4-53,22.4c-21.2,0-38.9-7.5-53-22.4l-202-201.4c-70.3,48.7-148.6,73-235,73c-56.1,0-109.8-10.9-161.1-32.7s-95.4-51.2-132.5-88.3c-37.1-37.1-66.5-81.3-88.3-132.5C20.9,534.5,10,480.8,10,424.6s10.9-109.8,32.7-161.1S93.9,168.1,131,131c37.1-37.1,81.3-66.6,132.5-88.3S368.5,10,424.6,10s109.8,10.9,161.1,32.7c51.2,21.8,95.4,51.2,132.5,88.3c37.1,37.1,66.6,81.3,88.3,132.5c21.8,51.2,32.7,104.9,32.7,161.1c0,86.4-24.3,164.7-73,235l202,202C982.7,876.1,990,893.8,990,914.6L990,914.6z"></path></svg></span></button></div><nav class="main-nav" itemscope itemtype="http://schema.org/SiteNavigationElement"><ul class="main-menu-bar"><li class="main-menu-bar__item"><a class="main-menu-bar__item-link" itemprop="url" href="/">Главная</a></li><li class="main-menu-bar__item"><a class="main-menu-bar__item-link" itemprop="url" href="/categories/uncategorized/">Разное</a></li><li class="main-menu-bar__item"><a class="main-menu-bar__item-link" itemprop="url" href="/categories/3d-print/">3D Печать</a></li><li class="main-menu-bar__item"><a class="main-menu-bar__item-link" itemprop="url" href="/categories/programming/">Программирование</a></li><li class="main-menu-bar__item"><a class="main-menu-bar__item-link" itemprop="url" href="/categories/electronics/">Электроника</a></li><li class="main-menu-bar__item"><a class="main-menu-bar__item-link" itemprop="url" href="/categories/repair/">Ремонт</a></li><li class="main-menu-bar__item"><a class="main-menu-bar__item-link js-#{i}" itemprop="url" href="/archives">Архив</a></li><li class="main-menu-bar__item"><a class="main-menu-bar__item-link js-#{i}" itemprop="url" href="/search">Поиск</a></li></ul></nav><script>var yandexSearchOptions = {
+  action: '/search/',
+  arrow: false,
+  bg: 'transparent',
+  fontsize: 16,
+  fg: '#FFF',
+  language: 'ru',
+  logo: 'rb',
+  publicname: 'Поиск по сайту www.diytronic.ru',
+  suggest: false,
+  target: '_self',
+  tld: 'ru',
+  type: 2,
+  searchid: 2298791,
+  webopt: false,
+  websearch: false,
+  input_fg: '#FFF',
+  input_bg: 'transparent',
+  input_fontStyle: 'normal',
+  input_fontWeight: 'normal',
+  input_placeholder: 'Поиск по сайту',
+  input_placeholderColor: '#FFF',
+  input_borderColor: 'transparent'
+}
+</script><div class="content-wrapper__search-box"><button class="button button_type_close button__control js-close-search"><span class="icon"><svg width="32" height="32" viewBox="0 0 348.333 348.334"><path d="M336.559,68.611L231.016,174.165l105.543,105.549c15.699,15.705,15.699,41.145,0,56.85   c-7.844,7.844-18.128,11.769-28.407,11.769c-10.296,0-20.581-3.919-28.419-11.769L174.167,231.003L68.609,336.563   c-7.843,7.844-18.128,11.769-28.416,11.769c-10.285,0-20.563-3.919-28.413-11.769c-15.699-15.698-15.699-41.139,0-56.85   l105.54-105.549L11.774,68.611c-15.699-15.699-15.699-41.145,0-56.844c15.696-15.687,41.127-15.687,56.829,0l105.563,105.554   L279.721,11.767c15.705-15.687,41.139-15.687,56.832,0C352.258,27.466,352.258,52.912,336.559,68.611z"></path></svg></span></button><div class="ya-site-form ya-site-form_inited_no" onclick="return yandexSearchOptions"><form class="search" action="https://yandex.ru/sitesearch" method="get" target="_self"><input type="hidden" name="searchid" value="2298791"/><input type="hidden" name="l10n" value="ru"/><input type="hidden" name="reqenc" value=""/><span class="input input_search"><span class="input__box"><input class="input__control" placeholder="Поиск" name="text"></span></span><button class="button button_type_submit button_search button__control" type="submit"><span class="icon"><svg width="24" height="24" viewBox="0 0 512 512"><path d="M445,386.7l-84.8-85.9c13.8-24.1,21-50.9,21-77.9c0-87.6-71.2-158.9-158.6-158.9C135.2,64,64,135.3,64,222.9c0,87.6,71.2,158.9,158.6,158.9c27.9,0,55.5-7.7,80.1-22.4l84.4,85.6c1.9,1.9,4.6,3.1,7.3,3.1c2.7,0,5.4-1.1,7.3-3.1l43.3-43.8C449,397.1,449,390.7,445,386.7z M222.6,125.9c53.4,0,96.8,43.5,96.8,97c0,53.5-43.4,97-96.8,97c-53.4,0-96.8-43.5-96.8-97C125.8,169.4,169.2,125.9,222.6,125.9z"></path></svg></span></button></form></div></div><footer class="copyright copyright--sidebar">&copy; 2023 DiyTronic</footer></div></div><div class="header__overlay"></div></section><div class="content-wrapper content-wrapper_main"><main class="content content_main" itemprop="mainEntityOfPage"> <article class="post post--full" itemscope itemtype="http://schema.org/Article" itemprop="mainEntityOfPage">
+  <header>
+    <h2 class="post__title" itemprop="headline">
+      <a class="link link__control link_post-title" href="/2018/04/07/upgrade-5v-power-supply-to-12v/">
+        Апгрейд китайского БП с 5 до 12 вольт
+      </a>
+    </h2>
+    <div class="post__meta">
+      <time class="post__date" datetime="2018-04-07T14:47:47.000Z" itemprop="datePublished">
+        7 апреля 2018
+      </time>
+      <span class="post__author" itemscope itemtype="http://schema.org/Person" itemprop="author"> Автор: <span itemprop="name">Роман Татауров</span></span>
+      <meta itemscope itescope itemType="https://schema.org/Person" itemprop="publisher" content="Роман Татауров" />
+      <a class="link link__control link_comments-count" href="https://diytronic.ru/2018/04/07/upgrade-5v-power-supply-to-12v/#disqus_thread"></a>
+    </div>
+  </header>
+
+  <div class="post__entry" itemprop="articleBody">
+    
+    <p>В одной из&nbsp;поделок понадобилось питание порядка 12-15&nbsp;вольт. Как и&nbsp;у&nbsp;многих наверно дома валяется куча блоков питания от&nbsp;старых мобильников. Но&nbsp;все они как правило 5-ти вольтовые. Решил доработать один из&nbsp;таких блоков и&nbsp;поднять ему напряжение до&nbsp;требуемого.</p>
+<span id="more"></span>
+
+<p>Как правило все современные блоки питания являются импульсными, что с&nbsp;одной стороны уменьшает их&nbsp;размер, но&nbsp;с&nbsp;другой стороны достигается это некоторым усложнением схемотехники.</p>
+<h1 id="Пациент"><a href="#Пациент" class="headerlink" title="Пациент"></a>Пациент</h1><p>Не заснял этот блок питания в&nbsp;оригинальном корпусе, да&nbsp;наверно это и&nbsp;не&nbsp;важно&nbsp;&mdash; обычный чёрный пластиковый корпус с&nbsp;вилкой.</p>
+<p>Снизу плата выглядит вот так</p>
+<p><img src="20151122_124818.jpg" alt="Плата вид снизу"></p>
+<p>А это вид на&nbsp;монтаж</p>
+<p><img src="20151122_124852.jpg" alt="Вид на монтаж"></p>
+<p>Невооружённым взглядом виден классический импульсный&nbsp;БП.</p>
+<h1 id="Увеличиваем-напряжение-с-делителя"><a href="#Увеличиваем-напряжение-с-делителя" class="headerlink" title="Увеличиваем напряжение с делителя"></a>Увеличиваем напряжение с&nbsp;делителя</h1><p>Первое что пришло в&nbsp;голову увеличить напряжение в&nbsp;цепи обратной связи регулятора. Для этого как минимум нужно было найти на&nbsp;плате делитель. Вот собственно&nbsp;он.</p>
+<p><img src="2015-11-22-130109.jpg" alt="Резисторы делителя в цепи обратной связи"></p>
+<p>Нижний резистор делителя 4.9&nbsp;кОм был заменен на&nbsp;подстроечный номиналом 10&nbsp;кОм.&nbsp;Монтаж конечно неказистый, но&nbsp;это времянка и&nbsp;с&nbsp;требуемой задачей вполне справляется.</p>
+<p><img src="20151122_174535.jpg" alt="Попытка порегулировать напряжение в цепи обртной связи"></p>
+<p>Не прокатило&nbsp;&mdash; напряжение удалось поднять максимум до&nbsp;8&nbsp;вольт. При этом блок питания начал отчаянно пищать, что как&nbsp;бы&nbsp;намекало&nbsp;нам, что режим работы далёк от&nbsp;оптимального.</p>
+<p>Дальнейшее насилие я&nbsp;посчитал бессмысленным и&nbsp;решил копнуть глубже.</p>
+<h1 id="Перемотка-трансформатора"><a href="#Перемотка-трансформатора" class="headerlink" title="Перемотка трансформатора"></a>Перемотка трансформатора</h1><p>Трансформатор был выпаян из&nbsp;платы. Надежда на&nbsp;безболезненное удаление сердечника не&nbsp;оправдалась&nbsp;&mdash; легко вышла лишь одна половинка, а&nbsp;вторая была приклеена к&nbsp;катушке с&nbsp;обмотками каким-то компаундом и&nbsp;я&nbsp;не&nbsp;решился её&nbsp;отодрать, т.&nbsp;к.&nbsp;боялся повредить хрупкий сердечник. Тем не&nbsp;менее даже в&nbsp;таком виде удалось довольно легко снять изоляцию обмоток и&nbsp;обнажить первую обмотку. Как оказалось это была регулирующая обмотка, а&nbsp;мне была нужна вторичная.</p>
+<p><img src="20151122_140718.jpg" alt="Трансформатор без изоляции - видна регулирующая обмотка"></p>
+<p>Пришлось смотать эту обмотку, после чего обнажилась вторичная обмотка, которая состояла из&nbsp;10&nbsp;витков медного провода диаметром 0,6&nbsp;мм, намотанным в&nbsp;2&nbsp;жилы.</p>
+<p><img src="20151122_155125.jpg" alt="Разобранный трансформатор - видна вторичная обмотка"></p>
+<p>Т.к. мне требовалось поднять напряжение примерно в&nbsp;2&nbsp;раза я&nbsp;домотал еще 12&nbsp;витков. Хотя как уже подумал позже можно было ничего не&nbsp;доматывать и&nbsp;просто разделить жилы обмотки и&nbsp;таким образом удвоить их&nbsp;число. Мощность-то у&nbsp;нас всё равно не&nbsp;изменилась и&nbsp;ограничивается сечением сердечника трансформатора, а&nbsp;увеличив напряжение в&nbsp;2&nbsp;раза максимальный ток соответственно уменьшился в&nbsp;2&nbsp;раза и&nbsp;можно было&nbsp;бы&nbsp;обойтись проводом вдвое меньшего сечения. Но&nbsp;как говорится&nbsp;&mdash; &laquo;хорошая мысля приходит опосля&raquo;.</p>
+<p>Итого в&nbsp;результате после домотки нужного количества витков и&nbsp;возвращения обратно регулирующей обмотки получилась вот такая конструкция.</p>
+<p><img src="20151122_161844.jpg" alt="Трансформатор после апгрейда в сборе"></p>
+<p>Ну, а&nbsp;далее трансформатор был возвращён на&nbsp;плату.</p>
+<p>Подстроечным резистором регулятора легко удалось получить требуемые 12&nbsp;вольт. Бонусом получил исчезновение даже того небольшого свиста который был у&nbsp;этого блока питания до&nbsp;переделки. Ну&nbsp;и&nbsp;далее уже всё просто&nbsp;&mdash; подстроечник был заменён на&nbsp;постоянный резистор и&nbsp;всё окончательно превратилось в&nbsp;конфетку.</p>
+<p>Вот как-то так можно использовать старый хлам в&nbsp;своих поделках.</p>
+<p>PS: На&nbsp;самом деле сделано ещё в&nbsp;2015&nbsp;году&nbsp;&mdash; только дошли руки дописать: ) </p>
+  </div>
+
+  <footer>
+      <ul class="tags tags_post">
+      <li class="tags__label"><i class="icon-tags"></i></li>
+            <li class="tags__tag">
+          <span class="tag" itemprop="articleSection">
+            <a class="link link__control link_tag" tabindex="0" href="/tags/power-supply/">Блок Питания</a>
+          </span>
+        </li>
+            <li class="tags__tag">
+          <span class="tag" itemprop="articleSection">
+            <a class="link link__control link_tag" tabindex="1" href="/tags/howto/">howto</a>
+          </span>
+        </li>
+          </ul>
+  
+  
+    <ul class="categories categories_post">
+      <li class="categories__label"><i class="icon-folder-empty"></i></li>
+      
+        <li class="categories__category">
+          <span class="category" itemprop="articleSection">
+            <a class="link link__control link_category" tabindex="0" href="/categories/electronics/">Электроника</a>
+          </span>
+        </li>
+      
+    </ul>
+  
+  <div class="share" style="margin: 1rem 0; display: flex; flex-direction: row; font-size: 90%">
+  <div class="share__label" style="margin-right: 0.5rem">Поделиться:</div>
+  <div class="share__body ya-share2" data-services="vkontakte,lj" data-size="s" data-description="Как повысить напряжение старого 5-вольтового блока питания до 12 вольт."></div>
+</div>
+  </footer>
+</article>
+
+
+<section class="comments">
+  <h3 class="comments__title">Комментарии</h3>
+  <div id="disqus_thread">
+    <noscript>Please enable JavaScript to view the <a target="_blank" rel="noopener" href="//disqus.com/?ref_noscript">comments powered by Disqus.</a></noscript>
+  </div>
+</section>
+
+
+
+<footer class="copyright copyright--bottom">&copy; 2023 DiyTronic</footer>
+</main></div><script>var disqus_config = function() {
+  this.page.url = 'https://diytronic.ru/2018/04/07/upgrade-5v-power-supply-to-12v/';
+  this.page.identifier = 'https://diytronic.ru/2018/04/07/upgrade-5v-power-supply-to-12v/';
+};
+
+(function() {  // DON'T EDIT BELOW THIS LINE
+  var d = document, s = d.createElement('script');
+  s.src = 'https://diytronic.disqus.com/embed.js';
+  s.setAttribute('data-timestamp', +new Date());
+  (d.head || d.body).appendChild(s);
+})();</script><noscript> <p class="disqus__no-js">Please enable JavaScript to view the <a target="_blank" href="https://disqus.com/?ref_noscript" rel="nofollow noopener">comments powered by Disqus.</a></p></noscript><!-- Yandex.Metrika counter--><script>(function (d, w, c) {
+    (w[c] = w[c] || []).push(function() {
+        try {
+          w.yaCounter33124378 = new Ya.Metrika({
+            id: '33124378',
+            clickmap:true,
+            trackLinks:true,
+            accurateTrackBounce:true,
+            webvisor:true,
+            trackHash:true
+          });
+        } catch(e) { }
+    });
+
+    var n = d.getElementsByTagName("script")[0],
+        s = d.createElement("script"),
+        f = function () { n.parentNode.insertBefore(s, n); };
+    s.type = "text/javascript";
+    s.async = true;
+    s.src = "https://mc.yandex.ru/metrika/watch.js";
+
+    if (w.opera == "[object Opera]") {
+        d.addEventListener("DOMContentLoaded", f, false);
+    } else { f(); }
+})(document, window, "yandex.metrika_callbacks");</script><noscript><div><img src="https://mc.yandex.ru/watch/#{config.yandex.metrika}" style="position:absolute; left:-9999px;" alt=""></div></noscript><!-- /Yandex.Metrika counter--><script src="https://yastatic.net/share2/share.js" async="async"></script><script src="/js/app-8f31f535.js"></script></body></html>

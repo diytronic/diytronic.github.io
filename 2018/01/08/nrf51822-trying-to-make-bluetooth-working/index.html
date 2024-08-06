@@ -1,0 +1,285 @@
+<!DOCTYPE html><html lang="ru" prefix="og: http://ogp.me/ns# ya: http://webmaster.yandex.ru/vocabularies/config article: http://ogp.me/ns/article#"><head><meta charset="utf-8"><meta name="author" content="Роман Татауров"><title>Снова nRF51822 - пробуем запустить Bluetooth</title><meta name="description" content="Как запустить BLE стэк на китайском модуле nRF51822."><meta name="keywords" content="nRF51822,SoftDevice,S130,Bluetooth"><meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1"><meta property="og:title" content=""><meta property="og:site_name" content="DiyTronic"><meta property="og:locale" content="ru_RU"><meta property="og:url" content="https://diytronic.ru/2018/01/08/nrf51822-trying-to-make-bluetooth-working/"><meta property="og:type" content="article"><meta property="og:description"><meta property="article:tag" content="[&quot;nRF51822&quot;,&quot;SoftDevice&quot;,&quot;S130&quot;,&quot;Bluetooth&quot;]"><meta property="article:section" content="[&quot;Электроника&quot;]"><meta property="article:published_time" content="2018-01-08T09:40:11.000Z"><meta property="article:modified_time" content="2018-01-08T09:40:11.000Z"><meta name="DC.Title" content="Снова nRF51822 - пробуем запустить Bluetooth"><meta name="DC.Subject"><meta name="DC.Creator" content="Роман Татауров"><meta name="DC.Creator.Name" content="Роман Татауров"><meta name="DC.Date" scheme="WTN8601" content="2018-01-08T09:40:11.000Z"><meta name="DC.Type" content="Text"><meta name="DC.Language" content="ru-RU"><meta name="apple-mobile-web-app-title" content="WebHive"><meta name="application-name" content="WebHive"><meta name="msapplication-TileColor" content="#2b5797"><meta name="theme-color" content="#ffffff"><link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png"><link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png"><link rel="icon" type="image/png" sizes="192x192" href="/android-chrome-192x192.png"><link rel="icon" type="image/png" sizes="16x16" href="/favicon-16x16.png"><link rel="manifest" href="/site.webmanifest"><link rel="mask-icon" href="/safari-pinned-tab.svg" color="#5bbad5"><link type="text/css" rel="stylesheet" href="/css/app-66a13052.css"><link rel="alternate" href="/atom.xml" title="DiyTronic | Заметки об электронике, программировании, 3D-печати" type="application/atom+xml"><meta name="generator" content="Hexo 5.4.2"></head><body class="page" itemscope itemtype="http://schema.org/WebPage" itemid="https://diytronic.ru/2018/01/08/nrf51822-trying-to-make-bluetooth-working/"><section class="header"> <div class="header__content"><div class="content-wrapper content-wrapper_header"><div class="title-box"><button class="button button_header button_left js-main-nav"><span class="icon"><svg width="24" height="24" viewBox="0 0 1000 1000"><path d="M108,206h784c54.1,0,98-43.9,98-98c0-54.1-43.9-98-98-98H108c-54.1,0-98,43.9-98,98C10,162.1,53.9,206,108,206z M892,402H108c-54.1,0-98,43.9-98,98c0,54.1,43.9,98,98,98h784c54.1,0,98-43.9,98-98C990,445.9,946.1,402,892,402z M892,794H108c-54.1,0-98,43.9-98,98c0,54.1,43.9,98,98,98h784c54.1,0,98-43.9,98-98C990,837.9,946.1,794,892,794z"></path></svg></span></button><a href="/"><img class="title-box__logo logo logo--main" src="/images/logo.png"/></a><h1 class="title-box__title"><a href="/">DiyTronic</a></h1><div class="title-box__description"><a href="/">Заметки об электронике, программировании, 3D-печати</a></div><button class="button button_header button_right js-search"><span class="icon"><svg width="24" height="24" viewBox="0 0 1000 1000"><path d="M688.5,424.6c0-72.6-25.8-134.8-77.4-186.4s-113.8-77.4-186.4-77.4s-134.8,25.8-186.4,77.4S160.8,352,160.8,424.6c0,72.6,25.8,134.8,77.4,186.4c51.6,51.6,113.8,77.4,186.4,77.4S559.4,662.6,611,611C662.6,559.4,688.5,497.3,688.5,424.6L688.5,424.6z M990,914.6c0,20.4-7.5,38.1-22.4,53c-14.9,14.9-32.6,22.4-53,22.4c-21.2,0-38.9-7.5-53-22.4l-202-201.4c-70.3,48.7-148.6,73-235,73c-56.1,0-109.8-10.9-161.1-32.7s-95.4-51.2-132.5-88.3c-37.1-37.1-66.5-81.3-88.3-132.5C20.9,534.5,10,480.8,10,424.6s10.9-109.8,32.7-161.1S93.9,168.1,131,131c37.1-37.1,81.3-66.6,132.5-88.3S368.5,10,424.6,10s109.8,10.9,161.1,32.7c51.2,21.8,95.4,51.2,132.5,88.3c37.1,37.1,66.6,81.3,88.3,132.5c21.8,51.2,32.7,104.9,32.7,161.1c0,86.4-24.3,164.7-73,235l202,202C982.7,876.1,990,893.8,990,914.6L990,914.6z"></path></svg></span></button></div><nav class="main-nav" itemscope itemtype="http://schema.org/SiteNavigationElement"><ul class="main-menu-bar"><li class="main-menu-bar__item"><a class="main-menu-bar__item-link" itemprop="url" href="/">Главная</a></li><li class="main-menu-bar__item"><a class="main-menu-bar__item-link" itemprop="url" href="/categories/uncategorized/">Разное</a></li><li class="main-menu-bar__item"><a class="main-menu-bar__item-link" itemprop="url" href="/categories/3d-print/">3D Печать</a></li><li class="main-menu-bar__item"><a class="main-menu-bar__item-link" itemprop="url" href="/categories/programming/">Программирование</a></li><li class="main-menu-bar__item"><a class="main-menu-bar__item-link" itemprop="url" href="/categories/electronics/">Электроника</a></li><li class="main-menu-bar__item"><a class="main-menu-bar__item-link" itemprop="url" href="/categories/repair/">Ремонт</a></li><li class="main-menu-bar__item"><a class="main-menu-bar__item-link js-#{i}" itemprop="url" href="/archives">Архив</a></li><li class="main-menu-bar__item"><a class="main-menu-bar__item-link js-#{i}" itemprop="url" href="/search">Поиск</a></li></ul></nav><script>var yandexSearchOptions = {
+  action: '/search/',
+  arrow: false,
+  bg: 'transparent',
+  fontsize: 16,
+  fg: '#FFF',
+  language: 'ru',
+  logo: 'rb',
+  publicname: 'Поиск по сайту www.diytronic.ru',
+  suggest: false,
+  target: '_self',
+  tld: 'ru',
+  type: 2,
+  searchid: 2298791,
+  webopt: false,
+  websearch: false,
+  input_fg: '#FFF',
+  input_bg: 'transparent',
+  input_fontStyle: 'normal',
+  input_fontWeight: 'normal',
+  input_placeholder: 'Поиск по сайту',
+  input_placeholderColor: '#FFF',
+  input_borderColor: 'transparent'
+}
+</script><div class="content-wrapper__search-box"><button class="button button_type_close button__control js-close-search"><span class="icon"><svg width="32" height="32" viewBox="0 0 348.333 348.334"><path d="M336.559,68.611L231.016,174.165l105.543,105.549c15.699,15.705,15.699,41.145,0,56.85   c-7.844,7.844-18.128,11.769-28.407,11.769c-10.296,0-20.581-3.919-28.419-11.769L174.167,231.003L68.609,336.563   c-7.843,7.844-18.128,11.769-28.416,11.769c-10.285,0-20.563-3.919-28.413-11.769c-15.699-15.698-15.699-41.139,0-56.85   l105.54-105.549L11.774,68.611c-15.699-15.699-15.699-41.145,0-56.844c15.696-15.687,41.127-15.687,56.829,0l105.563,105.554   L279.721,11.767c15.705-15.687,41.139-15.687,56.832,0C352.258,27.466,352.258,52.912,336.559,68.611z"></path></svg></span></button><div class="ya-site-form ya-site-form_inited_no" onclick="return yandexSearchOptions"><form class="search" action="https://yandex.ru/sitesearch" method="get" target="_self"><input type="hidden" name="searchid" value="2298791"/><input type="hidden" name="l10n" value="ru"/><input type="hidden" name="reqenc" value=""/><span class="input input_search"><span class="input__box"><input class="input__control" placeholder="Поиск" name="text"></span></span><button class="button button_type_submit button_search button__control" type="submit"><span class="icon"><svg width="24" height="24" viewBox="0 0 512 512"><path d="M445,386.7l-84.8-85.9c13.8-24.1,21-50.9,21-77.9c0-87.6-71.2-158.9-158.6-158.9C135.2,64,64,135.3,64,222.9c0,87.6,71.2,158.9,158.6,158.9c27.9,0,55.5-7.7,80.1-22.4l84.4,85.6c1.9,1.9,4.6,3.1,7.3,3.1c2.7,0,5.4-1.1,7.3-3.1l43.3-43.8C449,397.1,449,390.7,445,386.7z M222.6,125.9c53.4,0,96.8,43.5,96.8,97c0,53.5-43.4,97-96.8,97c-53.4,0-96.8-43.5-96.8-97C125.8,169.4,169.2,125.9,222.6,125.9z"></path></svg></span></button></form></div></div><footer class="copyright copyright--sidebar">&copy; 2023 DiyTronic</footer></div></div><div class="header__overlay"></div></section><div class="content-wrapper content-wrapper_main"><main class="content content_main" itemprop="mainEntityOfPage"> <article class="post post--full" itemscope itemtype="http://schema.org/Article" itemprop="mainEntityOfPage">
+  <header>
+    <h2 class="post__title" itemprop="headline">
+      <a class="link link__control link_post-title" href="/2018/01/08/nrf51822-trying-to-make-bluetooth-working/">
+        Снова nRF51822 - пробуем запустить Bluetooth
+      </a>
+    </h2>
+    <div class="post__meta">
+      <time class="post__date" datetime="2018-01-08T09:40:11.000Z" itemprop="datePublished">
+        8 января 2018
+      </time>
+      <span class="post__author" itemscope itemtype="http://schema.org/Person" itemprop="author"> Автор: <span itemprop="name">Роман Татауров</span></span>
+      <meta itemscope itescope itemType="https://schema.org/Person" itemprop="publisher" content="Роман Татауров" />
+      <a class="link link__control link_comments-count" href="https://diytronic.ru/2018/01/08/nrf51822-trying-to-make-bluetooth-working/#disqus_thread"></a>
+    </div>
+  </header>
+
+  <div class="post__entry" itemprop="articleBody">
+    
+    <p>В <a href="/2017/12/05/testing-nrf51822-ble-module/" title="первой статье, посвящённой nRF51822 модулю">первой статье, посвящённой nRF51822&nbsp;модулю</a> и&nbsp;опытов над ним я&nbsp;запустил на&nbsp;этом модуле простейшую мигалку светодиодами. Но&nbsp;это вовсе не&nbsp;то&nbsp;для чего создавался этот модуль и&nbsp;главная цель это получение полноценного BLE устройства. Поэтому продолжаю эксперименты и&nbsp;попробую поднять на&nbsp;устройстве&nbsp;BLE.</p>
+<span id="more"></span>
+
+<p>Для начала было&nbsp;бы&nbsp;неплохо узнать, что у&nbsp;нас есть на&nbsp;борту. Зачем это нужно станет понятно в&nbsp;дальнейшем, а&nbsp;пока поверьте мне на&nbsp;слово&nbsp;&mdash; это важно. Поэтому в&nbsp;начале небольшое лирическое отступление и&nbsp;минутка теории.</p>
+<h1 id="Как-узнать-версию-текущего-softdevice-а-зашитого-в-устройство"><a href="#Как-узнать-версию-текущего-softdevice-а-зашитого-в-устройство" class="headerlink" title="Как узнать версию текущего softdevice-а, зашитого в устройство?"></a>Как узнать версию текущего softdevice-а, зашитого в&nbsp;устройство?</h1><p>Идентификатор SoftDevice находится по&nbsp;адресу <code>0x300C</code>. Попробуем извлечь его оттуда.</p>
+<figure class="highlight sh"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">$ JLinkExe -device nrf51822 -<span class="keyword">if</span> swd</span><br><span class="line">J-Link&gt;mem16 0x300C, 1</span><br><span class="line">0000300C = 0067</span><br></pre></td></tr></table></figure>
+
+<p>По таблице находим что за&nbsp;SoftDevice соответствует этому идентификатору. Если возвращается пустое значение <code>0xFFFF</code> значит SoftDevice не&nbsp;установлен.</p>
+<table>
+<thead>
+<tr>
+<th>SoftDevice</th>
+<th>FWID</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>S110 v7.1.0</td>
+<td>0&times;005A</td>
+</tr>
+<tr>
+<td>S110 v8.0.0</td>
+<td>0&times;0064</td>
+</tr>
+<tr>
+<td>S120 v2.0.0</td>
+<td>0&times;0060</td>
+</tr>
+<tr>
+<td>S130 v1.0.0</td>
+<td>0&times;0067</td>
+</tr>
+<tr>
+<td>S130 0.9alpha</td>
+<td>0&times;005E</td>
+</tr>
+<tr>
+<td>S130 v2.0.0-7.alpha</td>
+<td>0&times;0078</td>
+</tr>
+<tr>
+<td>S310 v2.0.0</td>
+<td>0&times;005D</td>
+</tr>
+<tr>
+<td>S132 v1.0.0-3.alpha</td>
+<td>0&times;006D</td>
+</tr>
+</tbody></table>
+<p>Более подробно тут <a target="_blank" rel="noopener" href="https://devzone.nordicsemi.com/question/3629/how-do-i-access-softdevice-version-string/?answer=3693#post-id-3693">https://devzone.nordicsemi.com/question/3629/how-do-i-access-softdevice-version-string/? answer=3693#post-id-3693</a></p>
+<p>Итого как оказалось я&nbsp;залил softdevice S130&nbsp;версии 1. Собственно с&nbsp;SDK v10&nbsp;поставляется именно она поэтому с&nbsp;виду вроде как всё в&nbsp;порядке.</p>
+<p>Для более глубокого погружения в&nbsp;тему&nbsp;&mdash; вот <a target="_blank" rel="noopener" href="http://infocenter.nordicsemi.com/pdf/S130_SDS_v1.0.pdf">спецификация на&nbsp;S130 v1.0.0</a>. Уверен, придётся туда заглядывать ещё не&nbsp;раз.</p>
+<h1 id="Тип-чипа"><a href="#Тип-чипа" class="headerlink" title="Тип чипа"></a>Тип чипа</h1><p>В предыдущей статье уже упоминал важность знания конкретной маркировки чипа. В&nbsp;связи с&nbsp;этим заснял свой экземпляр:</p>
+<img src="/2018/01/08/nrf51822-trying-to-make-bluetooth-working/nrf51822-chip-mark.jpg" class="" title="Маркировка чипа nrf51822">
+
+<p>Ниже привожу выдержки из&nbsp;документации по&nbsp;конкретно этому чипу. Моей целью было узнать подробно о&nbsp;распределении адресного пространства контроллера, чтобы указать эту информацию линковщику осознанно, а&nbsp;не&nbsp;тупо копипастить куски кода.</p>
+<img src="/2018/01/08/nrf51822-trying-to-make-bluetooth-working/nrf51822-code-organization.png" class="" title="nRF51822 code organization">
+
+<img src="/2018/01/08/nrf51822-trying-to-make-bluetooth-working/nrf51822-ram-organization.png" class="" title="nRF51822 RAM organization">
+
+<img src="/2018/01/08/nrf51822-trying-to-make-bluetooth-working/nrf51822-ram-variants.png" class="" title="nRF51822 RAM variants">
+
+<img src="/2018/01/08/nrf51822-trying-to-make-bluetooth-working/nrf51822-mpu-flash-blocks.png" class="" title="MPU flash blocks">
+
+<h1 id="Адресация-S130"><a href="#Адресация-S130" class="headerlink" title="Адресация S130"></a>Адресация S130</h1><p>Итак я&nbsp;нашёл как распределяется адресное пространство контроллера в&nbsp;случае использования SoftDevice S130 v1.</p>
+<img src="/2018/01/08/nrf51822-trying-to-make-bluetooth-working/s130-memory-map.png" class="" title="Адресное пространство S130">
+
+<p>На этой схеме:</p>
+<table>
+<thead>
+<tr>
+<th>Параметр</th>
+<th align="right">Значение</th>
+<th>Где найти</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>APP_CODE_BASE</td>
+<td align="right">0&times;1C000</td>
+<td><a target="_blank" rel="noopener" href="http://infocenter.nordicsemi.com/index.jsp?topic=/com.nordic.infocenter.softdevices51/dita/nrf51/softdevices.html">Спецификация к&nbsp;SoftDevice</a></td>
+</tr>
+<tr>
+<td>APP_RAM_BASE</td>
+<td align="right">0&times;20002800</td>
+<td><a target="_blank" rel="noopener" href="http://infocenter.nordicsemi.com/index.jsp?topic=/com.nordic.infocenter.softdevices51/dita/nrf51/softdevices.html">Спецификация к&nbsp;SoftDevice</a></td>
+</tr>
+<tr>
+<td>SizeOfProgMem</td>
+<td align="right">256k</td>
+<td><a target="_blank" rel="noopener" href="http://infocenter.nordicsemi.com/index.jsp?topic=/com.nordic.infocenter.nrf51/dita/nrf51/compatibility_matrix/nRF51822_ic_revision_overview.html&cp=3_0_1">Определить по&nbsp;типу чипа</a></td>
+</tr>
+<tr>
+<td>SizeOfRAM</td>
+<td align="right">16k</td>
+<td><a target="_blank" rel="noopener" href="http://infocenter.nordicsemi.com/index.jsp?topic=/com.nordic.infocenter.nrf51/dita/nrf51/compatibility_matrix/nRF51822_ic_revision_overview.html&cp=3_0_1">Определить по&nbsp;типу чипа</a></td>
+</tr>
+</tbody></table>
+<p>И что&nbsp;же&nbsp;это нам даёт? А&nbsp;даёт это нам возможность корректно указать линковщику куда (в какие области памяти)  размещать&nbsp;код. Softdevice передаёт управление программе по&nbsp;конкретному адресу, поэтому эти значения нужно указывать точно иначе код просто не&nbsp;запустится.</p>
+<h1 id="Конфигурация-линкера"><a href="#Конфигурация-линкера" class="headerlink" title="Конфигурация линкера"></a>Конфигурация линкера</h1><p>Чтобы упростить работу со&nbsp;всем этими областями памяти <code>gcc</code> предоставляет нам возможность указать все эти области, а&nbsp;так-же расположение секций кода в&nbsp;специальном файле, который потом можно скормить линковщику и&nbsp;тот в&nbsp;свою очередь раскидает код как надо. В&nbsp;примерах SDK это файлы с&nbsp;расширением <code>ld</code>.</p>
+<h2 id="Секция-MEMORY"><a href="#Секция-MEMORY" class="headerlink" title="Секция MEMORY"></a>Секция MEMORY</h2><p>Здесь задаются значения областей памяти доступных коду программы. В&nbsp;нашем случае мы&nbsp;должны вычислить области флеша и&nbsp;памяти, свободные после заливки в&nbsp;память устройства кода softdevice. Значения по&nbsp;умолчанию можно найти в&nbsp;соответствующих файлах, расположенных в&nbsp;папке <code>components/toolchain/gcc</code>&nbsp;SDK.</p>
+<p>Выглядит это примерно&nbsp;так:</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">MEMORY</span><br><span class="line">&#123;</span><br><span class="line">  FLASH (rx) : ORIGIN = 0x1c000, LENGTH = 0x24000</span><br><span class="line">  RAM (rwx) :  ORIGIN = 0x20002800, LENGTH = 0x5800</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>Скажем прямо&nbsp;&mdash; сходу ничего непонятно&nbsp;&mdash; какие-то константы и&nbsp;откуда они взялись решительно неясно.</p>
+<h3 id="Как-рассчитать-эти-значения"><a href="#Как-рассчитать-эти-значения" class="headerlink" title="Как рассчитать эти значения"></a>Как рассчитать эти значения</h3><p>Поля <code>ORIGIN</code> берутся из&nbsp;спецификации к&nbsp;SoftDevice-у. Выше в&nbsp;таблицах указаны значения для S130 v1.</p>
+<p>Для флеша</p>
+<ul>
+<li>ORIGIN = APP_CODE_BASE = 0&times;1C000</li>
+<li>LENGTH = &lt; размер флеш памяти&gt;&nbsp;&mdash; ORIGIN = 256k&nbsp;&mdash; 0&times;1C000</li>
+</ul>
+<p>Для ОЗУ</p>
+<ul>
+<li>ORIGIN = APP_RAM_BASE = 0&times;20002800</li>
+<li>LENGTH = &lt; размер ОЗУ&gt;&nbsp;&mdash; (APP_RAM_BASE&nbsp;&mdash; 0&times;20000000)  = 16k&nbsp;&mdash; 0&times;2800</li>
+</ul>
+<p>Для ОЗУ нумерация адресов идёт не&nbsp;с&nbsp;нуля, поэтому и&nbsp;вычитаем начальный адрес.<br>Для ОЗУ так-же есть нюанс&nbsp;&mdash; <code>ORIGIN</code> не&nbsp;фиксирован и&nbsp;в&nbsp;ряде случаев должен быть пересчитан, но&nbsp;это уже нюансы которые описаны в&nbsp;документации.</p>
+<p>В итоге для <code>XXAA</code> чипа и&nbsp;SoftDevice S130&nbsp;v.&nbsp;1&nbsp;конфигурация памяти в&nbsp;файле линковщика будет выглядеть&nbsp;как:</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">MEMORY</span><br><span class="line">&#123;</span><br><span class="line">  FLASH (rx) : ORIGIN = 0x1c000, LENGTH = 256k - 0x1c00</span><br><span class="line">  RAM (rwx) :  ORIGIN = 0x20002800, LENGTH = 16k - 0x2800</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<h2 id="Секция-SECTIONS"><a href="#Секция-SECTIONS" class="headerlink" title="Секция SECTIONS"></a>Секция SECTIONS</h2><p>Здесь задаются секции кода. В&nbsp;файле <code>components/toolchain/gcc/nrf51_common.ld</code> (ну и&nbsp;соответствующие common файлы для других чипов)  описаны стандартные секции кода, поэтому этот файл всегда включается в&nbsp;файл линковщика.</p>
+<p>Часто встречающаяся секция <code>fs_data</code> и&nbsp;<code>fs_data_out</code> предназначена для хранения информации о&nbsp;привязке (bonding). Ну&nbsp;или для хранения любой другой информации используя API для хранилища если это вам нужно. Поэтому как правило нужна. Более подробно можно почитать в&nbsp;<a target="_blank" rel="noopener" href="https://infocenter.nordicsemi.com/index.jsp?topic=/com.nordic.infocenter.sdk51.v10.0.0/lib_section_vars.html&cp=4_0_9_3_30">документации</a></p>
+<h1 id="Какой-пример-будем-запускать"><a href="#Какой-пример-будем-запускать" class="headerlink" title="Какой пример будем запускать?"></a>Какой пример будем запускать?</h1><p>Поковырявшись в&nbsp;примерах решил попробовать этот <code>examples/ble_peripheral/ble_app_uart</code>. Не&nbsp;скажу почему, но&nbsp;с&nbsp;другой стороны почему&nbsp;бы&nbsp;и&nbsp;нет?</p>
+<p>Итак исходный код не&nbsp;трогаю, ибо он&nbsp;мне пока не&nbsp;интересен&nbsp;&mdash; тут&nbsp;бы&nbsp;готовый пример заставить работать, а&nbsp;не&nbsp;с&nbsp;кодом упражняться. В&nbsp;папке вижу подпапку <code>pca10028</code>&nbsp;&mdash; это какая-то демоплата, но&nbsp;у&nbsp;меня такой нет, а&nbsp;есть <code>ble400</code>, просто копирую всю папку <code>pca10028</code> в&nbsp;<code>ble400</code> и&nbsp;далее буду упражняться на&nbsp;ней.</p>
+<p>Заходим в&nbsp;неё и&nbsp;видим знакомые нам подпапки <code>S110</code> и&nbsp;<code>S130</code>. Очевидно нам нужна <code>S130</code> ибо выше всё уже посчитано для&nbsp;неё. Внутри сразу проходим в&nbsp;<code>armgcc</code> и&nbsp;видим знакомые нам Makefile и&nbsp;конфигурацию линковщика. Ну&nbsp;что&nbsp;&mdash; лопату в&nbsp;руки и&nbsp;поехали.</p>
+<h2 id="Правим-Makefile"><a href="#Правим-Makefile" class="headerlink" title="Правим Makefile"></a>Правим Makefile</h2><ol>
+<li>Меняю имя проекта с&nbsp;<code>ble_app_uart_s130_pca10028</code> на&nbsp;<code>ble_app_uart_s130_ble400</code></li>
+<li><code>-DBOARD_PCA10028</code> на&nbsp;<code>-DBOARD_CUSTOM</code></li>
+<li>Добавляю <code>-D__HEAP_SIZE=512</code> к&nbsp;опциям <code>CFLAGS</code> и&nbsp;<code>ASMFLAGS</code></li>
+</ol>
+<p>Ну и&nbsp;собственно и&nbsp;всё. Последнее действие нужно&nbsp;т.&nbsp;к.&nbsp;при сборке выскочила ошибка <code>region RAM overflowed with stack</code>. В&nbsp;общем уменьшение HEAP до&nbsp;515&nbsp;решает проблему, но&nbsp;я&nbsp;больше склоняюсь к&nbsp;мысли переехать на&nbsp;SoftDevice S110, как менее ресурсоёмкий.</p>
+<h2 id="Линковщик"><a href="#Линковщик" class="headerlink" title="Линковщик"></a>Линковщик</h2><p>Выше уже все расписал, поэтому просто приведу свой файл.</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br></pre></td><td class="code"><pre><span class="line">/* Linker script to configure memory regions. */</span><br><span class="line"></span><br><span class="line">SEARCH_DIR(.)</span><br><span class="line">GROUP(-lgcc -lc -lnosys)</span><br><span class="line"></span><br><span class="line">MEMORY</span><br><span class="line">&#123;</span><br><span class="line">  FLASH (rx) : ORIGIN = 0x1c000, LENGTH = 256k - 0x1c00</span><br><span class="line">  RAM (rwx) :  ORIGIN = 0x20002800, LENGTH = 16k - 0x2800</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">SECTIONS</span><br><span class="line">&#123;</span><br><span class="line">  .fs_data_out ALIGN(4):</span><br><span class="line">  &#123;</span><br><span class="line">    PROVIDE( __start_fs_data = .);</span><br><span class="line">    KEEP(*(fs_data))</span><br><span class="line">    PROVIDE( __stop_fs_data = .);</span><br><span class="line">  &#125; = 0</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">INCLUDE &quot;nrf5x_common.ld&quot;</span><br></pre></td></tr></table></figure>
+
+<h1 id="Сборка"><a href="#Сборка" class="headerlink" title="Сборка"></a>Сборка</h1><p>Просто выполняем команду <code>make</code></p>
+<figure class="highlight sh"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br></pre></td><td class="code"><pre><span class="line">$ make</span><br><span class="line"><span class="built_in">rm</span> -rf _build</span><br><span class="line"><span class="built_in">echo</span>  Makefile</span><br><span class="line">Makefile</span><br><span class="line"><span class="built_in">mkdir</span> _build</span><br><span class="line">Compiling file: app_button.c</span><br><span class="line">Compiling file: app_error.c</span><br><span class="line">...</span><br><span class="line">Compiling file: system_nrf51.c</span><br><span class="line">Compiling file: softdevice_handler.c</span><br><span class="line">Compiling file: gcc_startup_nrf51.s</span><br><span class="line">Linking target: nrf51422_xxac_s130.out</span><br><span class="line">make[1]: вход в каталог «/home/roman/.Projects/nrf51/nRF51_SDK_10.0.0_dc26b5e/examples/ble_peripheral/ble_app_uart/ble400/s130/armgcc»</span><br><span class="line">Preparing: nrf51422_xxac_s130.bin</span><br><span class="line">Preparing: nrf51422_xxac_s130.hex</span><br><span class="line"></span><br><span class="line">   text	   data	    bss	    dec	    hex	filename</span><br><span class="line">  21980	    116	   2260	  24356	   5f24	_build/nrf51422_xxac_s130.out</span><br><span class="line"></span><br><span class="line">make[1]: выход из каталога «/home/roman/.Projects/nrf51/nRF51_SDK_10.0.0_dc26b5e/examples/ble_peripheral/ble_app_uart/ble400/s130/armgcc»</span><br></pre></td></tr></table></figure>
+
+<p>То, что выходной файл имеет неверное имя чипа и&nbsp;его тип не&nbsp;должно смущать, это всего-лишь наименование которое авторы SDK видимо ленятся менять. Поэтому я&nbsp;тоже поленюсь и&nbsp;оставлю как есть. Но&nbsp;тем не&nbsp;менее мы&nbsp;получили файл прошивки <code>nrf51422_xxac_s130.hex</code> и&nbsp;это прекрасно.</p>
+<h1 id="Прошивка"><a href="#Прошивка" class="headerlink" title="Прошивка"></a>Прошивка</h1><p>Давайте&nbsp;же&nbsp;наконец зальём наше творение в&nbsp;модуль и&nbsp;посмотрим как оно работает и&nbsp;работает&nbsp;ли&nbsp;вообще.<br>Расчехляю JLink, соединяю всё как надо и&nbsp;запускаю процесс прошивки. На&nbsp;всякий случай очищу память модуля и&nbsp;заново залью SoftDevice и&nbsp;свой&nbsp;код.</p>
+<figure class="highlight sh"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br></pre></td><td class="code"><pre><span class="line">$ JLinkExe -device nrf51822 -<span class="keyword">if</span> swd</span><br><span class="line">SEGGER J-Link Commander V4.84f (<span class="string">&#x27;?&#x27;</span> <span class="keyword">for</span> <span class="built_in">help</span>)</span><br><span class="line">Compiled May  9 2014 20:12:27</span><br><span class="line">Info: Device <span class="string">&quot;NRF51822_XXAA&quot;</span> selected (257 KB flash, 16 KB RAM).</span><br><span class="line">DLL version V4.84f, compiled May  9 2014 20:12:24</span><br><span class="line">Firmware: J-Link ARM V8 compiled Jul 17 2014 12:31:18</span><br><span class="line">Hardware: V8.00</span><br><span class="line">S/N: 158005115</span><br><span class="line">Feature(s): RDI,FlashDL,FlashBP,JFlash,GDBFull</span><br><span class="line">VTarget = 3.332V</span><br><span class="line">Info: Found SWD-DP with ID 0x0BB11477</span><br><span class="line">Info: Found Cortex-M0 r0p0, Little endian.</span><br><span class="line">Info: FPUnit: 4 code (BP) slots and 0 literal slots</span><br><span class="line">Found 1 JTAG device, Total IRLen = 4:</span><br><span class="line">Cortex-M0 identified.</span><br><span class="line">Target interface speed: 100 kHz</span><br><span class="line">J-Link&gt;erase</span><br><span class="line">Erasing device (nRF51822_xxAA)...</span><br><span class="line">Info: J-Link: Flash download: Total time needed: 5.947s (Prepare: 0.510s, Compare: 0.000s, Erase: 5.393s, Program: 0.000s, Verify: 0.000s, Restore: 0.043s)</span><br><span class="line">Erasing <span class="keyword">done</span>.</span><br><span class="line">J-Link&gt;loadfile ../../../../../../components/softdevice/s130/hex/s130_nrf51_1.0.0_softdevice.hex</span><br><span class="line">Info: J-Link: Flash download: Flash programming performed <span class="keyword">for</span> 2 ranges (110592 bytes)</span><br><span class="line">Info: J-Link: Flash download: Total time needed: 16.710s (Prepare: 1.205s, Compare: 0.246s, Erase: 0.000s, Program: 14.484s, Verify: 0.022s, Restore: 0.751s)</span><br><span class="line">J-Link&gt;loadfile _build/nrf51422_xxac_s130.hex</span><br><span class="line">Info: J-Link: Flash download: Flash programming performed <span class="keyword">for</span> 1 range (22528 bytes)</span><br><span class="line">Info: J-Link: Flash download: Total time needed: 4.623s (Prepare: 0.982s, Compare: 0.028s, Erase: 0.000s, Program: 3.104s, Verify: 0.004s, Restore: 0.502s)</span><br><span class="line">J-Link&gt;r</span><br><span class="line">Reset delay: 0 ms</span><br><span class="line">Reset <span class="built_in">type</span> NORMAL: Resets core &amp; peripherals via SYSRESETREQ &amp; VECTRESET bit.</span><br><span class="line">J-Link&gt;g</span><br></pre></td></tr></table></figure>
+
+<p>Если кого-то пугают ужасные пути подскажу&nbsp;&mdash; в&nbsp;JLink-е есть автодополнение путей по&nbsp;клавише&nbsp;Tab.</p>
+<p>На этом месте плата бодро зажгла светодиоды, что видимо что-то означает, но&nbsp;я&nbsp;не&nbsp;знаю&nbsp;что. Ну&nbsp;как минимум что-то сработало&nbsp;&mdash; теоретически у&nbsp;нас сейчас должно работать Bluetooth устройство. Надо&nbsp;бы&nbsp;его как-то поискать.</p>
+<img src="/2018/01/08/nrf51822-trying-to-make-bluetooth-working/ble400-working.jpg" class="" title="Плата с блютуфом заработала">
+
+<h1 id="Результат"><a href="#Результат" class="headerlink" title="Результат"></a>Результат</h1><p>В итоге попробовал просканировать эфир программой &laquo;nRF Connect&raquo; и&nbsp;собственно увидел в&nbsp;списке устройств <code>Nordic_UART</code>, что как&nbsp;бы&nbsp;намекает&nbsp;нам, что устройство функционирует и&nbsp;доступно для подключения.</p>
+<img src="/2018/01/08/nrf51822-trying-to-make-bluetooth-working/nRF-connect-found-device.png" class="" title="Программа nRF Connect обнаружила устройство">
+
+<p>Я считаю неплохой результат&nbsp;&mdash; по&nbsp;крайней мере ещё один шаг вперёд.</p>
+<h1 id="Источники"><a href="#Источники" class="headerlink" title="Источники"></a>Источники</h1><ul>
+<li><a target="_blank" rel="noopener" href="http://infocenter.nordicsemi.com/pdf/nRF51822_PS_v3.3.pdf">http://infocenter.nordicsemi.com/pdf/nRF51822_PS_v3.3.pdf</a></li>
+</ul>
+  </div>
+
+  <footer>
+      <ul class="tags tags_post">
+      <li class="tags__label"><i class="icon-tags"></i></li>
+            <li class="tags__tag">
+          <span class="tag" itemprop="articleSection">
+            <a class="link link__control link_tag" tabindex="0" href="/tags/nrf51822/">nRF51822</a>
+          </span>
+        </li>
+            <li class="tags__tag">
+          <span class="tag" itemprop="articleSection">
+            <a class="link link__control link_tag" tabindex="1" href="/tags/SoftDevice/">SoftDevice</a>
+          </span>
+        </li>
+            <li class="tags__tag">
+          <span class="tag" itemprop="articleSection">
+            <a class="link link__control link_tag" tabindex="2" href="/tags/S130/">S130</a>
+          </span>
+        </li>
+            <li class="tags__tag">
+          <span class="tag" itemprop="articleSection">
+            <a class="link link__control link_tag" tabindex="3" href="/tags/Bluetooth/">Bluetooth</a>
+          </span>
+        </li>
+          </ul>
+  
+  
+    <ul class="categories categories_post">
+      <li class="categories__label"><i class="icon-folder-empty"></i></li>
+      
+        <li class="categories__category">
+          <span class="category" itemprop="articleSection">
+            <a class="link link__control link_category" tabindex="0" href="/categories/electronics/">Электроника</a>
+          </span>
+        </li>
+      
+    </ul>
+  
+  <div class="share" style="margin: 1rem 0; display: flex; flex-direction: row; font-size: 90%">
+  <div class="share__label" style="margin-right: 0.5rem">Поделиться:</div>
+  <div class="share__body ya-share2" data-services="vkontakte,lj" data-size="s" data-description="Как запустить BLE стэк на китайском модуле nRF51822."></div>
+</div>
+  </footer>
+</article>
+
+
+<section class="comments">
+  <h3 class="comments__title">Комментарии</h3>
+  <div id="disqus_thread">
+    <noscript>Please enable JavaScript to view the <a target="_blank" rel="noopener" href="//disqus.com/?ref_noscript">comments powered by Disqus.</a></noscript>
+  </div>
+</section>
+
+
+
+<footer class="copyright copyright--bottom">&copy; 2023 DiyTronic</footer>
+</main></div><script>var disqus_config = function() {
+  this.page.url = 'https://diytronic.ru/2018/01/08/nrf51822-trying-to-make-bluetooth-working/';
+  this.page.identifier = 'https://diytronic.ru/2018/01/08/nrf51822-trying-to-make-bluetooth-working/';
+};
+
+(function() {  // DON'T EDIT BELOW THIS LINE
+  var d = document, s = d.createElement('script');
+  s.src = 'https://diytronic.disqus.com/embed.js';
+  s.setAttribute('data-timestamp', +new Date());
+  (d.head || d.body).appendChild(s);
+})();</script><noscript> <p class="disqus__no-js">Please enable JavaScript to view the <a target="_blank" href="https://disqus.com/?ref_noscript" rel="nofollow noopener">comments powered by Disqus.</a></p></noscript><!-- Yandex.Metrika counter--><script>(function (d, w, c) {
+    (w[c] = w[c] || []).push(function() {
+        try {
+          w.yaCounter33124378 = new Ya.Metrika({
+            id: '33124378',
+            clickmap:true,
+            trackLinks:true,
+            accurateTrackBounce:true,
+            webvisor:true,
+            trackHash:true
+          });
+        } catch(e) { }
+    });
+
+    var n = d.getElementsByTagName("script")[0],
+        s = d.createElement("script"),
+        f = function () { n.parentNode.insertBefore(s, n); };
+    s.type = "text/javascript";
+    s.async = true;
+    s.src = "https://mc.yandex.ru/metrika/watch.js";
+
+    if (w.opera == "[object Opera]") {
+        d.addEventListener("DOMContentLoaded", f, false);
+    } else { f(); }
+})(document, window, "yandex.metrika_callbacks");</script><noscript><div><img src="https://mc.yandex.ru/watch/#{config.yandex.metrika}" style="position:absolute; left:-9999px;" alt=""></div></noscript><!-- /Yandex.Metrika counter--><script src="https://yastatic.net/share2/share.js" async="async"></script><script src="/js/app-8f31f535.js"></script></body></html>

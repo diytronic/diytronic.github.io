@@ -1,0 +1,192 @@
+<!DOCTYPE html><html lang="ru" prefix="og: http://ogp.me/ns# ya: http://webmaster.yandex.ru/vocabularies/config article: http://ogp.me/ns/article#"><head><meta charset="utf-8"><meta name="author" content="Роман Татауров"><title>Пишем драйвер устройства для Zephyr RTOS</title><meta name="description" content="Как написать дравер для Zephyr RTOS? Базовые понятия."><meta name="keywords" content="Zephyr RTOS,RTOS,Драйвера,Язык C,Программирование"><meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1"><meta property="og:title" content=""><meta property="og:site_name" content="DiyTronic"><meta property="og:locale" content="ru_RU"><meta property="og:url" content="https://diytronic.ru/2018/04/14/writing-zephyr-rtos-device-driver/"><meta property="og:type" content="article"><meta property="og:description"><meta property="article:tag" content="[&quot;Zephyr RTOS&quot;,&quot;RTOS&quot;,&quot;Драйвера&quot;,&quot;Язык C&quot;,&quot;Программирование&quot;]"><meta property="article:section" content="[&quot;Программирование&quot;]"><meta property="article:published_time" content="2018-04-13T23:07:59.000Z"><meta property="article:modified_time" content="2018-04-13T23:07:59.000Z"><meta name="DC.Title" content="Пишем драйвер устройства для Zephyr RTOS"><meta name="DC.Subject"><meta name="DC.Creator" content="Роман Татауров"><meta name="DC.Creator.Name" content="Роман Татауров"><meta name="DC.Date" scheme="WTN8601" content="2018-04-13T23:07:59.000Z"><meta name="DC.Type" content="Text"><meta name="DC.Language" content="ru-RU"><meta name="apple-mobile-web-app-title" content="WebHive"><meta name="application-name" content="WebHive"><meta name="msapplication-TileColor" content="#2b5797"><meta name="theme-color" content="#ffffff"><link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png"><link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png"><link rel="icon" type="image/png" sizes="192x192" href="/android-chrome-192x192.png"><link rel="icon" type="image/png" sizes="16x16" href="/favicon-16x16.png"><link rel="manifest" href="/site.webmanifest"><link rel="mask-icon" href="/safari-pinned-tab.svg" color="#5bbad5"><link type="text/css" rel="stylesheet" href="/css/app-66a13052.css"><link rel="alternate" href="/atom.xml" title="DiyTronic | Заметки об электронике, программировании, 3D-печати" type="application/atom+xml"><meta name="generator" content="Hexo 5.4.2"></head><body class="page" itemscope itemtype="http://schema.org/WebPage" itemid="https://diytronic.ru/2018/04/14/writing-zephyr-rtos-device-driver/"><section class="header"> <div class="header__content"><div class="content-wrapper content-wrapper_header"><div class="title-box"><button class="button button_header button_left js-main-nav"><span class="icon"><svg width="24" height="24" viewBox="0 0 1000 1000"><path d="M108,206h784c54.1,0,98-43.9,98-98c0-54.1-43.9-98-98-98H108c-54.1,0-98,43.9-98,98C10,162.1,53.9,206,108,206z M892,402H108c-54.1,0-98,43.9-98,98c0,54.1,43.9,98,98,98h784c54.1,0,98-43.9,98-98C990,445.9,946.1,402,892,402z M892,794H108c-54.1,0-98,43.9-98,98c0,54.1,43.9,98,98,98h784c54.1,0,98-43.9,98-98C990,837.9,946.1,794,892,794z"></path></svg></span></button><a href="/"><img class="title-box__logo logo logo--main" src="/images/logo.png"/></a><h1 class="title-box__title"><a href="/">DiyTronic</a></h1><div class="title-box__description"><a href="/">Заметки об электронике, программировании, 3D-печати</a></div><button class="button button_header button_right js-search"><span class="icon"><svg width="24" height="24" viewBox="0 0 1000 1000"><path d="M688.5,424.6c0-72.6-25.8-134.8-77.4-186.4s-113.8-77.4-186.4-77.4s-134.8,25.8-186.4,77.4S160.8,352,160.8,424.6c0,72.6,25.8,134.8,77.4,186.4c51.6,51.6,113.8,77.4,186.4,77.4S559.4,662.6,611,611C662.6,559.4,688.5,497.3,688.5,424.6L688.5,424.6z M990,914.6c0,20.4-7.5,38.1-22.4,53c-14.9,14.9-32.6,22.4-53,22.4c-21.2,0-38.9-7.5-53-22.4l-202-201.4c-70.3,48.7-148.6,73-235,73c-56.1,0-109.8-10.9-161.1-32.7s-95.4-51.2-132.5-88.3c-37.1-37.1-66.5-81.3-88.3-132.5C20.9,534.5,10,480.8,10,424.6s10.9-109.8,32.7-161.1S93.9,168.1,131,131c37.1-37.1,81.3-66.6,132.5-88.3S368.5,10,424.6,10s109.8,10.9,161.1,32.7c51.2,21.8,95.4,51.2,132.5,88.3c37.1,37.1,66.6,81.3,88.3,132.5c21.8,51.2,32.7,104.9,32.7,161.1c0,86.4-24.3,164.7-73,235l202,202C982.7,876.1,990,893.8,990,914.6L990,914.6z"></path></svg></span></button></div><nav class="main-nav" itemscope itemtype="http://schema.org/SiteNavigationElement"><ul class="main-menu-bar"><li class="main-menu-bar__item"><a class="main-menu-bar__item-link" itemprop="url" href="/">Главная</a></li><li class="main-menu-bar__item"><a class="main-menu-bar__item-link" itemprop="url" href="/categories/uncategorized/">Разное</a></li><li class="main-menu-bar__item"><a class="main-menu-bar__item-link" itemprop="url" href="/categories/3d-print/">3D Печать</a></li><li class="main-menu-bar__item"><a class="main-menu-bar__item-link" itemprop="url" href="/categories/programming/">Программирование</a></li><li class="main-menu-bar__item"><a class="main-menu-bar__item-link" itemprop="url" href="/categories/electronics/">Электроника</a></li><li class="main-menu-bar__item"><a class="main-menu-bar__item-link" itemprop="url" href="/categories/repair/">Ремонт</a></li><li class="main-menu-bar__item"><a class="main-menu-bar__item-link js-#{i}" itemprop="url" href="/archives">Архив</a></li><li class="main-menu-bar__item"><a class="main-menu-bar__item-link js-#{i}" itemprop="url" href="/search">Поиск</a></li></ul></nav><script>var yandexSearchOptions = {
+  action: '/search/',
+  arrow: false,
+  bg: 'transparent',
+  fontsize: 16,
+  fg: '#FFF',
+  language: 'ru',
+  logo: 'rb',
+  publicname: 'Поиск по сайту www.diytronic.ru',
+  suggest: false,
+  target: '_self',
+  tld: 'ru',
+  type: 2,
+  searchid: 2298791,
+  webopt: false,
+  websearch: false,
+  input_fg: '#FFF',
+  input_bg: 'transparent',
+  input_fontStyle: 'normal',
+  input_fontWeight: 'normal',
+  input_placeholder: 'Поиск по сайту',
+  input_placeholderColor: '#FFF',
+  input_borderColor: 'transparent'
+}
+</script><div class="content-wrapper__search-box"><button class="button button_type_close button__control js-close-search"><span class="icon"><svg width="32" height="32" viewBox="0 0 348.333 348.334"><path d="M336.559,68.611L231.016,174.165l105.543,105.549c15.699,15.705,15.699,41.145,0,56.85   c-7.844,7.844-18.128,11.769-28.407,11.769c-10.296,0-20.581-3.919-28.419-11.769L174.167,231.003L68.609,336.563   c-7.843,7.844-18.128,11.769-28.416,11.769c-10.285,0-20.563-3.919-28.413-11.769c-15.699-15.698-15.699-41.139,0-56.85   l105.54-105.549L11.774,68.611c-15.699-15.699-15.699-41.145,0-56.844c15.696-15.687,41.127-15.687,56.829,0l105.563,105.554   L279.721,11.767c15.705-15.687,41.139-15.687,56.832,0C352.258,27.466,352.258,52.912,336.559,68.611z"></path></svg></span></button><div class="ya-site-form ya-site-form_inited_no" onclick="return yandexSearchOptions"><form class="search" action="https://yandex.ru/sitesearch" method="get" target="_self"><input type="hidden" name="searchid" value="2298791"/><input type="hidden" name="l10n" value="ru"/><input type="hidden" name="reqenc" value=""/><span class="input input_search"><span class="input__box"><input class="input__control" placeholder="Поиск" name="text"></span></span><button class="button button_type_submit button_search button__control" type="submit"><span class="icon"><svg width="24" height="24" viewBox="0 0 512 512"><path d="M445,386.7l-84.8-85.9c13.8-24.1,21-50.9,21-77.9c0-87.6-71.2-158.9-158.6-158.9C135.2,64,64,135.3,64,222.9c0,87.6,71.2,158.9,158.6,158.9c27.9,0,55.5-7.7,80.1-22.4l84.4,85.6c1.9,1.9,4.6,3.1,7.3,3.1c2.7,0,5.4-1.1,7.3-3.1l43.3-43.8C449,397.1,449,390.7,445,386.7z M222.6,125.9c53.4,0,96.8,43.5,96.8,97c0,53.5-43.4,97-96.8,97c-53.4,0-96.8-43.5-96.8-97C125.8,169.4,169.2,125.9,222.6,125.9z"></path></svg></span></button></form></div></div><footer class="copyright copyright--sidebar">&copy; 2023 DiyTronic</footer></div></div><div class="header__overlay"></div></section><div class="content-wrapper content-wrapper_main"><main class="content content_main" itemprop="mainEntityOfPage"> <article class="post post--full" itemscope itemtype="http://schema.org/Article" itemprop="mainEntityOfPage">
+  <header>
+    <h2 class="post__title" itemprop="headline">
+      <a class="link link__control link_post-title" href="/2018/04/14/writing-zephyr-rtos-device-driver/">
+        Пишем драйвер устройства для Zephyr RTOS
+      </a>
+    </h2>
+    <div class="post__meta">
+      <time class="post__date" datetime="2018-04-13T23:07:59.000Z" itemprop="datePublished">
+        14 апреля 2018
+      </time>
+      <span class="post__author" itemscope itemtype="http://schema.org/Person" itemprop="author"> Автор: <span itemprop="name">Роман Татауров</span></span>
+      <meta itemscope itescope itemType="https://schema.org/Person" itemprop="publisher" content="Роман Татауров" />
+      <a class="link link__control link_comments-count" href="https://diytronic.ru/2018/04/14/writing-zephyr-rtos-device-driver/#disqus_thread"></a>
+    </div>
+  </header>
+
+  <div class="post__entry" itemprop="articleBody">
+    
+    <p>Я тут боле-менее разобрался с&nbsp;написанием драйверов для Zephyr-а. Решил поделиться своим опытом. Информации об&nbsp;этом не&nbsp;так, чтобы очень много, поэтому думаю кому-то это может пригодиться. Если вам эта тема интересна, то&nbsp;значит вы&nbsp;попали по&nbsp;адресу.</p>
+<span id="more"></span>
+
+<h1 id="Как-использовать-драйвер-в-коде"><a href="#Как-использовать-драйвер-в-коде" class="headerlink" title="Как использовать драйвер в коде"></a>Как использовать драйвер в&nbsp;коде</h1><p>Для начала, чтоб понять вообще что мы&nbsp;делаем давайте разберёмся как вызвать драйвер в&nbsp;коде приложения. Для примера приведу некий псевдокод. Пусть это будет драйвер светодиода, API которого будет состоять из&nbsp;методов <code>led_on</code>, <code>led_off</code> без параметров и&nbsp;<code>toggle</code> с&nbsp;булевым параметром означающим состояние светодиода.</p>
+<pre class="code language language-c"><code class="language language-c"><span class="token comment">/* подключаем описание API драйвера */</span>
+<span class="token macro property">#<span class="token directive keyword">include</span> <span class="token string">"led_driver_api.h"</span>;</span>
+
+<span class="token keyword">void</span> <span class="token function">main</span><span class="token punctuation">(</span><span class="token keyword">void</span><span class="token punctuation">)</span>
+<span class="token punctuation">{</span>
+    <span class="token comment">/* получаем указатель на конфигурацию драйвера */</span>
+    <span class="token keyword">struct</span> <span class="token class-name">device</span> <span class="token operator">*</span>dev <span class="token operator">=</span> <span class="token function">device_get_binding</span><span class="token punctuation">(</span><span class="token string">"LED-DRIVER"</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+
+    <span class="token comment">/* получаем ссылку на API драйвера*/</span>
+    <span class="token keyword">const</span> <span class="token keyword">struct</span> <span class="token class-name">led_driver_api</span> <span class="token operator">*</span>api <span class="token operator">=</span> dev<span class="token operator">-></span>driver_api<span class="token punctuation">;</span>
+
+    <span class="token comment">/* вызываем доступные драйверу методы API */</span>
+    api<span class="token operator">-></span><span class="token function">led_on</span><span class="token punctuation">(</span>dev<span class="token punctuation">)</span><span class="token punctuation">;</span>
+    api<span class="token operator">-></span><span class="token function">toggle</span><span class="token punctuation">(</span>dev<span class="token punctuation">,</span> TRUE<span class="token punctuation">)</span><span class="token punctuation">;</span>
+<span class="token punctuation">}</span></code></pre>
+
+<p>Зачем так сложно и&nbsp;почему просто не&nbsp;подёргать светодиод обращаясь к&nbsp;портам напрямую? Если проект невелик, то&nbsp;вопрос вполне резонный и&nbsp;я&nbsp;даже отвечу, что вы&nbsp;правы&nbsp;&mdash; ни&nbsp;к&nbsp;чему такое усложнение. Но&nbsp;если проект довольно сложный то&nbsp;очень легко получить конфликтную или ошибочную ситуацию да&nbsp;и&nbsp;просто запутаться в&nbsp;коде.</p>
+<p>В частности это позволяет избежать одновременного доступа к&nbsp;пинам из&nbsp;разных мест программы, что вполне возможно когда несколько устройств сидят например на&nbsp;одних и&nbsp;тех-же выводах используя шину i2c. Код отвечающий за&nbsp;разные устройства может запросто начать одновременно пытаться сформировать нужные сигналы на&nbsp;линии, тем самым мешая друг другу.</p>
+<p>Использование драйвера позволяет изолировать код непосредственного доступа к&nbsp;пинам внутри драйвера. Операционная система&nbsp;же&nbsp;в&nbsp;свою очередь гарантирует изоляцию разрешая непосредственно приложению лишь доступные вызовы API методов. Кроме того добивается переносимость кода. Например для кода различного рода датчиков, когда достаточно подключить драйвер и&nbsp;пользоваться, не&nbsp;парясь особо над кодом и&nbsp;не&nbsp;адаптируя чужие куски кода для своей программы.</p>
+<h1 id="А-на-каком-выводе-контроллера-зажжётся-светодиод"><a href="#А-на-каком-выводе-контроллера-зажжётся-светодиод" class="headerlink" title="А на каком выводе контроллера зажжётся светодиод?"></a>А на&nbsp;каком выводе контроллера зажжётся светодиод?</h1><p>В вышеприведённом коде совершенно неясно на&nbsp;какой-же ноге зажжётся светодиод. Как-же быть? Есть варианты.</p>
+<h2 id="Захардкодить-прямо-в-драйвере"><a href="#Захардкодить-прямо-в-драйвере" class="headerlink" title="Захардкодить прямо в драйвере"></a>Захардкодить прямо в&nbsp;драйвере</h2><p>Тупейший метод&nbsp;&mdash; прошить нужный пин жестко в&nbsp;драйвере и&nbsp;пусть разработчик просто вешает всё на&nbsp;нужные выводы. Несмотря на&nbsp;кажущуюся глупость метод вполне имеет право на&nbsp;жизнь. Некоторые контроллеры например имеют аппаратную поддержку некоторых функций и&nbsp;только на&nbsp;определённых пинах. Ну&nbsp;например АЦП может быть только на&nbsp;определённой ноге. И&nbsp;тут уже ограничение накладывается именно железом, а&nbsp;не&nbsp;прихотями разработчика драйвера.</p>
+<h2 id="Добавить-метод-в-API"><a href="#Добавить-метод-в-API" class="headerlink" title="Добавить метод в API"></a>Добавить метод в&nbsp;API</h2><p>Вполне себе тоже метод&nbsp;&mdash; просто в&nbsp;API добавляем нужный метод типа <code>set_pin(dev, &lt;номер вывода&gt;)</code> и&nbsp;драйвер будет использовать эти данные для работы.</p>
+<p>Так-же для хранения неких конфигурационных данных в&nbsp;структуре <code>device *dev</code> в&nbsp;коде выше есть поле <code>config</code>. У&nbsp;каждого драйвера там хранится своя информация, поэтому чтобы знать, что и&nbsp;куда там складывать нужно изучить заголовочный файл драйвера и&nbsp;поискать информацию&nbsp;там.</p>
+<pre class="code language language-c"><code class="language language-c"><span class="token comment">/* подключаем описание API драйвера */</span>
+<span class="token macro property">#<span class="token directive keyword">include</span> <span class="token string">"led_driver_api.h"</span>;</span>
+
+<span class="token keyword">void</span> <span class="token function">main</span><span class="token punctuation">(</span><span class="token keyword">void</span><span class="token punctuation">)</span>
+<span class="token punctuation">{</span>
+    <span class="token comment">/* получаем указатель на конфигурацию драйвера */</span>
+    <span class="token keyword">struct</span> <span class="token class-name">device</span> <span class="token operator">*</span>dev <span class="token operator">=</span> <span class="token function">device_get_binding</span><span class="token punctuation">(</span><span class="token string">"LED-DRIVER"</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+
+    dev<span class="token operator">-></span>config<span class="token operator">-></span>pin <span class="token operator">=</span> <span class="token operator">&lt;</span>номер пина<span class="token operator">></span><span class="token punctuation">;</span> <span class="token comment">// тут прописывам нужный пин</span>
+    <span class="token punctuation">.</span><span class="token punctuation">.</span><span class="token punctuation">.</span>
+<span class="token punctuation">}</span></code></pre>
+
+<p>Но это в&nbsp;большей степени&nbsp;хак, чем нормальный&nbsp;код. При достаточно сложном проекте раскиданные по&nbsp;коду настройки конфигурации лишь усложнят жизнь. Поэтому плавно переходим к&nbsp;правильному способу.</p>
+<h2 id="Прописать-в-файл-настроек-приложения"><a href="#Прописать-в-файл-настроек-приложения" class="headerlink" title="Прописать в файл настроек приложения"></a>Прописать в&nbsp;файл настроек приложения</h2><p>Zephyr поддерживает систему конфигурирования Kconfig, используемую так-же в&nbsp;частности ядром Linux. Фактически это некий файл конфигурации, состоящих из&nbsp;набора переменных <code>ключ</code> =&gt; <code>значение</code>. Во&nbsp;время сборки все они подставляются в&nbsp;код в&nbsp;виде переменных. Очевидно, что в&nbsp;случае большого проекта количество переменных будет довольно большим и&nbsp;управлять ими будет сложно, поэтому система Kconfig имеет графический интерфейс для управления этими переменными.</p>
+<img src="/2018/04/14/writing-zephyr-rtos-device-driver/Kconfig-screen.png" class="" title="Пример окна Kconfig">
+
+<p>Собственно настройка проекта через Kconfig и&nbsp;является наиболее кошерным методом настройки проекта. В&nbsp;данном примере мы&nbsp;как раз видим опции драйвера DHT11/22. Тут как раз можно во&nbsp;первых включить в&nbsp;код поддержку данного драйвера (в данном случае это была галочка на&nbsp;предыдущем экране), выбрать GPIO, номер порта, имя драйвера и&nbsp;т.&nbsp;п.</p>
+<p>После сохранения файла у&nbsp;нас появится файл с&nbsp;настройками, в&nbsp;котором можно посмотреть названия переменных. Нам собственно интересна переменная с&nbsp;именем драйвера, чтобы не&nbsp;зависеть от&nbsp;этой строки. В&nbsp;данном случае это будет переменная <code>CONFIG_DHT_NAME</code> и&nbsp;наш код будет выглядеть следующим образом:</p>
+<pre class="code language language-c"><code class="language language-c"><span class="token keyword">void</span> <span class="token function">main</span><span class="token punctuation">(</span><span class="token keyword">void</span><span class="token punctuation">)</span>
+<span class="token punctuation">{</span>
+    <span class="token comment">/* получаем указатель на конфигурацию драйвера */</span>
+    <span class="token keyword">struct</span> <span class="token class-name">device</span> <span class="token operator">*</span>dev <span class="token operator">=</span> <span class="token function">device_get_binding</span><span class="token punctuation">(</span>CONFIG_DHT_NAME<span class="token punctuation">)</span><span class="token punctuation">;</span></code></pre>
+
+<p>Ну вот в&nbsp;целом и&nbsp;всё про использование драйверов. Подробнее про каждый драйвер можно узнать изучив исходники в&nbsp;папке <code>drivers</code> кода Zephyr RTOS. Там есть и&nbsp;API и&nbsp;опции Kconfig. Ну,&nbsp;а&nbsp;в&nbsp;готовом проекте уже можно поднастроить какие-то опции драйвера из&nbsp;графической оболочки.</p>
+<p>В следующей статье начну писать конкретный драйвер устройства ну&nbsp;и&nbsp;покажу на&nbsp;примере как это делается.</p>
+  </div>
+
+  <footer>
+      <ul class="tags tags_post">
+      <li class="tags__label"><i class="icon-tags"></i></li>
+            <li class="tags__tag">
+          <span class="tag" itemprop="articleSection">
+            <a class="link link__control link_tag" tabindex="0" href="/tags/zephyr/">Zephyr RTOS</a>
+          </span>
+        </li>
+            <li class="tags__tag">
+          <span class="tag" itemprop="articleSection">
+            <a class="link link__control link_tag" tabindex="1" href="/tags/rtos/">RTOS</a>
+          </span>
+        </li>
+            <li class="tags__tag">
+          <span class="tag" itemprop="articleSection">
+            <a class="link link__control link_tag" tabindex="2" href="/tags/drivers/">Драйвера</a>
+          </span>
+        </li>
+            <li class="tags__tag">
+          <span class="tag" itemprop="articleSection">
+            <a class="link link__control link_tag" tabindex="3" href="/tags/c-lang/">Язык C</a>
+          </span>
+        </li>
+            <li class="tags__tag">
+          <span class="tag" itemprop="articleSection">
+            <a class="link link__control link_tag" tabindex="4" href="/tags/programming/">Программирование</a>
+          </span>
+        </li>
+          </ul>
+  
+  
+    <ul class="categories categories_post">
+      <li class="categories__label"><i class="icon-folder-empty"></i></li>
+      
+        <li class="categories__category">
+          <span class="category" itemprop="articleSection">
+            <a class="link link__control link_category" tabindex="0" href="/categories/programming/">Программирование</a>
+          </span>
+        </li>
+      
+    </ul>
+  
+  <div class="share" style="margin: 1rem 0; display: flex; flex-direction: row; font-size: 90%">
+  <div class="share__label" style="margin-right: 0.5rem">Поделиться:</div>
+  <div class="share__body ya-share2" data-services="vkontakte,lj" data-size="s" data-description="Как написать дравер для Zephyr RTOS? Базовые понятия."></div>
+</div>
+  </footer>
+</article>
+
+
+<section class="comments">
+  <h3 class="comments__title">Комментарии</h3>
+  <div id="disqus_thread">
+    <noscript>Please enable JavaScript to view the <a target="_blank" rel="noopener" href="//disqus.com/?ref_noscript">comments powered by Disqus.</a></noscript>
+  </div>
+</section>
+
+
+
+<footer class="copyright copyright--bottom">&copy; 2023 DiyTronic</footer>
+</main></div><script>var disqus_config = function() {
+  this.page.url = 'https://diytronic.ru/2018/04/14/writing-zephyr-rtos-device-driver/';
+  this.page.identifier = 'https://diytronic.ru/2018/04/14/writing-zephyr-rtos-device-driver/';
+};
+
+(function() {  // DON'T EDIT BELOW THIS LINE
+  var d = document, s = d.createElement('script');
+  s.src = 'https://diytronic.disqus.com/embed.js';
+  s.setAttribute('data-timestamp', +new Date());
+  (d.head || d.body).appendChild(s);
+})();</script><noscript> <p class="disqus__no-js">Please enable JavaScript to view the <a target="_blank" href="https://disqus.com/?ref_noscript" rel="nofollow noopener">comments powered by Disqus.</a></p></noscript><!-- Yandex.Metrika counter--><script>(function (d, w, c) {
+    (w[c] = w[c] || []).push(function() {
+        try {
+          w.yaCounter33124378 = new Ya.Metrika({
+            id: '33124378',
+            clickmap:true,
+            trackLinks:true,
+            accurateTrackBounce:true,
+            webvisor:true,
+            trackHash:true
+          });
+        } catch(e) { }
+    });
+
+    var n = d.getElementsByTagName("script")[0],
+        s = d.createElement("script"),
+        f = function () { n.parentNode.insertBefore(s, n); };
+    s.type = "text/javascript";
+    s.async = true;
+    s.src = "https://mc.yandex.ru/metrika/watch.js";
+
+    if (w.opera == "[object Opera]") {
+        d.addEventListener("DOMContentLoaded", f, false);
+    } else { f(); }
+})(document, window, "yandex.metrika_callbacks");</script><noscript><div><img src="https://mc.yandex.ru/watch/#{config.yandex.metrika}" style="position:absolute; left:-9999px;" alt=""></div></noscript><!-- /Yandex.Metrika counter--><script src="https://yastatic.net/share2/share.js" async="async"></script><script src="/js/app-8f31f535.js"></script></body></html>
